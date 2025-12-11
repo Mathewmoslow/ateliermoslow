@@ -1,0 +1,122 @@
+.editor-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.ribbon {
+  display: flex;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--panel2);
+  border-bottom: 1px solid var(--line);
+}
+
+.ribbon-group {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.ribbon-group.ghost {
+  border-style: dashed;
+  opacity: 0.8;
+}
+
+.ribbon-btn {
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  background: var(--panel3);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.ribbon-btn.active {
+  border-color: var(--accent);
+  background: rgba(74, 163, 255, 0.15);
+}
+
+.page-wrap {
+  flex: 1;
+  overflow: auto;
+  background: var(--bg);
+  display: grid;
+  place-items: center;
+  padding: 22px 0 40px;
+}
+
+.page {
+  background: var(--page);
+  color: var(--page-text);
+  width: 860px;
+  min-height: 1040px;
+  border-radius: 4px;
+  box-shadow: var(--shadow-page);
+  padding: 42px 54px;
+}
+
+.page .ProseMirror {
+  min-height: 900px;
+  outline: none;
+  font-family: var(--font-editor);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.page .ProseMirror p {
+  margin: 0 0 14px 0;
+}
+
+.page .ProseMirror h1 {
+  font-size: 32px;
+  margin: 0 0 16px;
+  line-height: 1.2;
+}
+
+.page .ProseMirror h2 {
+  font-size: 24px;
+  margin: 24px 0 12px;
+}
+
+.page .ProseMirror ul {
+  padding-left: 22px;
+  margin: 0 0 14px;
+}
+
+.page .ProseMirror blockquote {
+  border-left: 3px solid #ddd;
+  padding-left: 12px;
+  margin: 0 0 14px;
+  color: #555;
+  font-style: italic;
+}
+
+.page .ProseMirror a {
+  color: #1d6fdc;
+  text-decoration: underline;
+}
+
+.page .ProseMirror mark {
+  background: #ffeb3b66;
+}
+
+.page .ProseMirror:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 6px;
+}
+
+.statusbar {
+  height: var(--statusbar-height);
+  background: var(--bg-darker);
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 0 14px;
+  color: var(--text-muted);
+  font-size: 12px;
+}

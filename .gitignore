@@ -36,6 +36,10 @@ Thumbs.db
 # Vercel
 .vercel
 
+# Build artifacts from tsc --build on config
+vite.config.js
+vite.config.d.ts
+
 # Reference directories (keep locally, don't track)
 file-portal/
 

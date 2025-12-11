@@ -239,6 +239,30 @@ input:focus, textarea:focus {
   gap: 8px;
 }
 
+.panel-card {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.panel-card.ghost {
+  border-style: dashed;
+  opacity: 0.8;
+}
+
+.card-title {
+  font-weight: 600;
+}
+
+.card-sub {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
 .workspace-main {
   display: flex;
   flex-direction: column;

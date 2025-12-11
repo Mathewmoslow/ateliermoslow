@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useAuthStore } from './store/auth'
+import { EditorCanvas } from './components/editor/EditorCanvas'
 import './styles/globals.css'
 
 function Header() {
@@ -41,26 +42,30 @@ function PlaceholderWorkspace() {
       <div className="workspace-left">
         <div className="panel-header">Projects</div>
         <div className="panel-muted">Project list coming next.</div>
+        <div className="panel-card">
+          <div className="card-title">Beyond the Reach of Justice</div>
+          <div className="card-sub">Thriller • 8 chapters</div>
+        </div>
+        <div className="panel-card ghost">
+          <div className="card-title">New Project</div>
+          <div className="card-sub">Tap to create</div>
+        </div>
       </div>
       <div className="workspace-main">
-        <div className="ribbon-placeholder">
-          <div className="pill">Type system</div>
-          <div className="pill">Page layout</div>
-          <div className="pill">AI Companion</div>
-        </div>
-        <div className="editor-canvas">
-          <div className="page-placeholder">
-            <h1>Writer-ready canvas</h1>
-            <p>
-              Tiptap editor and companion UI will render here. Auth is wired to Supabase; next we
-              will hydrate projects and documents from the new schema.
-            </p>
-          </div>
-        </div>
+        <EditorCanvas />
       </div>
       <div className="workspace-right">
         <div className="panel-header">Companion</div>
-        <div className="panel-muted">AI panel stub.</div>
+        <div className="panel-card">
+          <div className="card-title">AI Brief</div>
+          <div className="card-sub">
+            Deliver concise, voice-aware suggestions. Keep tone consistent with the voice profile.
+          </div>
+        </div>
+        <div className="panel-card ghost">
+          <div className="card-title">Voice Profile</div>
+          <div className="card-sub">Guardian prompt + cliche filter</div>
+        </div>
       </div>
     </div>
   )
