@@ -148,12 +148,12 @@ input:focus, textarea:focus {
 }
 
 .app-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: var(--bg-darker);
-  border-bottom: 1px solid var(--line);
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 12px 16px !important;
+  background: var(--bg-darker) !important;
+  border-bottom: 1px solid var(--line) !important;
 }
 
 .app-title {
@@ -223,19 +223,15 @@ input:focus, textarea:focus {
 }
 
 .workspace-shell {
-  display: grid;
-  grid-template-columns: 260px 1fr 280px;
-  height: calc(100vh - 56px);
-  background: var(--bg);
+  min-height: calc(100vh - 56px);
 }
 
-.workspace-left,
-.workspace-right {
+.workspace-side {
+  background: var(--panel) !important;
   border-inline: 1px solid var(--line);
-  background: var(--panel);
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  padding: 12px;
   gap: 8px;
 }
 
@@ -267,6 +263,7 @@ input:focus, textarea:focus {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  background: var(--bg);
 }
 
 .panel-header {
@@ -316,4 +313,29 @@ input:focus, textarea:focus {
 
 .page-placeholder h1 {
   margin-top: 0;
+}
+
+.mobile-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+}
+
+@media (max-width: 992px) {
+  .app-header {
+    padding: 10px 12px !important;
+  }
+
+  .workspace-shell {
+    min-height: auto;
+  }
+
+  .color-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .color-panel-wrap.mobile .color-panel {
+    gap: 10px;
+  }
 }

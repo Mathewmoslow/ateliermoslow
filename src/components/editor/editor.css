@@ -223,6 +223,31 @@
   border: 1px solid var(--line);
 }
 
+@media (max-width: 992px) {
+  .color-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .ribbon {
+    flex-wrap: wrap;
+  }
+
+  .ribbon-group {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .page {
+    width: 100%;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .page-wrap {
+    padding: 12px;
+  }
+}
+
 .page-wrap {
   flex: 1;
   overflow: auto;

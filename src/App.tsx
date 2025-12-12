@@ -1,29 +1,33 @@
 import { useEffect } from 'react'
+import { Layout, Button, Typography, Space, Grid, theme, Card } from 'antd'
 import { useAuthStore } from './store/auth'
 import { EditorCanvas } from './components/editor/EditorCanvas'
 import './styles/globals.css'
 
-function Header() {
+const { Header, Content, Sider } = Layout
+const { Text } = Typography
+
+function ShellHeader() {
   const { user, signInWithGoogle, signOut } = useAuthStore()
+  const screens = Grid.useBreakpoint()
+  const isMobile = !screens.md
 
   return (
-    <header className="app-header">
+    <Header className="app-header">
       <div className="app-title">Atelier Moslow</div>
-      <div className="app-actions">
+      <Space align="center" size={12}>
+        {user && !isMobile && <Text type="secondary">{user.email}</Text>}
         {user ? (
-          <>
-            <span className="user-label">{user.email}</span>
-            <button className="ghost-button" onClick={signOut}>
-              Sign out
-            </button>
-          </>
+          <Button size={isMobile ? 'small' : 'middle'} onClick={signOut}>
+            Sign out
+          </Button>
         ) : (
-          <button className="primary-button" onClick={signInWithGoogle}>
+          <Button type="primary" size={isMobile ? 'small' : 'middle'} onClick={signInWithGoogle}>
             Sign in with Google
-          </button>
+          </Button>
         )}
-      </div>
-    </header>
+      </Space>
+    </Header>
   )
 }
 
@@ -36,53 +40,74 @@ function Loading() {
   )
 }
 
-function PlaceholderWorkspace() {
-  return (
-    <div className="workspace-shell">
-      <div className="workspace-left">
-        <div className="panel-header">Projects</div>
-        <div className="panel-muted">Project list coming next.</div>
-        <div className="panel-card">
-          <div className="card-title">Beyond the Reach of Justice</div>
-          <div className="card-sub">Thriller • 8 chapters</div>
-        </div>
-        <div className="panel-card ghost">
-          <div className="card-title">New Project</div>
-          <div className="card-sub">Tap to create</div>
-        </div>
-      </div>
-      <div className="workspace-main">
-        <EditorCanvas />
-      </div>
-      <div className="workspace-right">
-        <div className="panel-header">Companion</div>
-        <div className="panel-card">
-          <div className="card-title">AI Brief</div>
-          <div className="card-sub">
-            Deliver concise, voice-aware suggestions. Keep tone consistent with the voice profile.
-          </div>
-        </div>
-        <div className="panel-card ghost">
-          <div className="card-title">Voice Profile</div>
-          <div className="card-sub">Guardian prompt + cliche filter</div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 function App() {
-  const { init, loading, user } = useAuthStore()
+  const { init, loading } = useAuthStore()
+  const screens = Grid.useBreakpoint()
+  const isMobile = !screens.md
+  const { token } = theme.useToken()
 
   useEffect(() => {
     init()
   }, [init])
 
   return (
-    <div className="app-shell">
-      <Header />
-      {loading ? <Loading /> : <PlaceholderWorkspace key={user?.id ?? 'guest'} />}
-    </div>
+    <Layout className="app-shell" style={{ background: token.colorBgBase }}>
+      <ShellHeader />
+      {loading ? (
+        <Loading />
+      ) : (
+        <Layout className="workspace-shell">
+          {!isMobile && (
+            <Sider width={260} theme="dark" className="workspace-side">
+              <div className="panel-header">Projects</div>
+              <div className="panel-muted">Project list coming next.</div>
+              <Card size="small" className="panel-card ant-card-ghost">
+                <div className="card-title">Beyond the Reach of Justice</div>
+                <div className="card-sub">Thriller • 8 chapters</div>
+              </Card>
+              <Card size="small" className="panel-card ant-card-ghost dashed">
+                <div className="card-title">New Project</div>
+                <div className="card-sub">Tap to create</div>
+              </Card>
+            </Sider>
+          )}
+
+          <Content className="workspace-main">
+            <EditorCanvas isMobile={isMobile} />
+          </Content>
+
+          {!isMobile && (
+            <Sider width={280} theme="dark" className="workspace-side">
+              <div className="panel-header">Companion</div>
+              <Card size="small" className="panel-card">
+                <div className="card-title">AI Brief</div>
+                <div className="card-sub">
+                  Deliver concise, voice-aware suggestions. Keep tone consistent with the voice
+                  profile.
+                </div>
+              </Card>
+              <Card size="small" className="panel-card ant-card-ghost dashed">
+                <div className="card-title">Voice Profile</div>
+                <div className="card-sub">Guardian prompt + cliche filter</div>
+              </Card>
+            </Sider>
+          )}
+
+          {isMobile && (
+            <div className="mobile-panels">
+              <Card size="small" className="panel-card">
+                <div className="card-title">Projects</div>
+                <div className="card-sub">Compact list for mobile coming next.</div>
+              </Card>
+              <Card size="small" className="panel-card">
+                <div className="card-title">Companion</div>
+                <div className="card-sub">AI panel mobile layout.</div>
+              </Card>
+            </div>
+          )}
+        </Layout>
+      )}
+    </Layout>
   )
 }
 

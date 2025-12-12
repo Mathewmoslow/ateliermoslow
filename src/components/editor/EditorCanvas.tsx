@@ -33,6 +33,10 @@ import { ColorPanel } from './ColorPanel'
 
 type AlignOption = 'left' | 'center' | 'right' | 'justify'
 
+interface EditorCanvasProps {
+  isMobile?: boolean
+}
+
 interface RibbonButtonProps {
   label: string
   icon: React.ReactNode
@@ -75,7 +79,7 @@ function useRibbon(editor: Editor | null) {
   }
 }
 
-export function EditorCanvas() {
+export function EditorCanvas({ isMobile }: EditorCanvasProps) {
   const [swatchColor, setSwatchColor] = useState('#4aa3ff')
   const [lineHeight, setLineHeight] = useState(1.6)
   const [paraSpacing, setParaSpacing] = useState(14)
@@ -233,7 +237,7 @@ export function EditorCanvas() {
         </div>
       </div>
 
-      <div className="color-panel-wrap">
+      <div className={`color-panel-wrap ${isMobile ? 'mobile' : ''}`}>
         <ColorPanel onSelectColor={applyColor} current={swatchColor} />
       </div>
 
