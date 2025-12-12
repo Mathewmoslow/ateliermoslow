@@ -25,6 +25,9 @@ import {
   FieldBinaryOutlined,
   ClearOutlined,
   BgColorsOutlined,
+  FontSizeOutlined,
+  SortAscendingOutlined,
+  SortDescendingOutlined,
 } from '@ant-design/icons'
 import { Button, Space, Tooltip, InputNumber, Switch, Tabs, Select, Slider } from 'antd'
 import './editor.css'
@@ -103,7 +106,6 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
   const [tracking, setTracking] = useState(0)
   const [baselineShift, setBaselineShift] = useState(0)
   const [textCase, setTextCase] = useState<'none' | 'uppercase' | 'lowercase' | 'small-caps'>('none')
-
   const editor = useEditor({
     extensions: [
       Color.configure({ types: ['textStyle'] }),
@@ -182,6 +184,7 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
     }
     editor?.chain().focus().setMark('textStyle', attrs).run()
   }
+
 
   useImperativeHandle(
     ref,
@@ -344,6 +347,8 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
             <RibbonButton label="Align center" icon={<AlignCenterOutlined />} onClick={ribbon.alignCenter} size={btnSize} />
             <RibbonButton label="Align right" icon={<AlignRightOutlined />} onClick={ribbon.alignRight} size={btnSize} />
             <RibbonButton label="Justify" icon={<ColumnWidthOutlined />} onClick={ribbon.alignJustify} size={btnSize} />
+            <RibbonButton label="Justify Center" icon={<SortAscendingOutlined />} onClick={ribbon.alignJustify} size={btnSize} />
+            <RibbonButton label="Justify Full" icon={<SortDescendingOutlined />} onClick={ribbon.alignJustify} size={btnSize} />
           </Space>
           <Space className="ribbon-group flat controls" size={8} wrap>
             <label className="control">
@@ -361,6 +366,14 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
             <label className="control">
               <span>Spacing</span>
               <InputNumber size="small" step={2} min={0} max={48} value={paraSpacing} onChange={(v) => applyParaSpacing(Number(v) || 14)} />
+            </label>
+            <label className="control">
+              <span>Indent L</span>
+              <InputNumber size="small" step={1} min={0} max={60} value={0} disabled />
+            </label>
+            <label className="control">
+              <span>Indent R</span>
+              <InputNumber size="small" step={1} min={0} max={60} value={0} disabled />
             </label>
             <label className="control switch">
               <span>Hyphenate</span>
@@ -382,6 +395,8 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
             <RibbonButton label="Outdent" icon={<FieldBinaryOutlined rotate={180} />} onClick={ribbon.outdent} size={btnSize} />
             <RibbonButton label="Clear" icon={<ClearOutlined />} onClick={ribbon.clearFormatting} size={btnSize} />
             <RibbonButton label="Text color" icon={<BgColorsOutlined />} onClick={() => applyColor(swatchColor)} size={btnSize} />
+            <RibbonButton label="Superscript" icon={<FontSizeOutlined />} onClick={() => editor?.chain().focus().setMark('textStyle', { verticalAlign: 'super' }).run()} size={btnSize} />
+            <RibbonButton label="Subscript" icon={<FontSizeOutlined rotate={180} />} onClick={() => editor?.chain().focus().setMark('textStyle', { verticalAlign: 'sub' }).run()} size={btnSize} />
           </Space>
         </Space>
       ),

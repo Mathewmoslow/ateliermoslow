@@ -65,6 +65,11 @@
   background: rgba(74, 163, 255, 0.15);
 }
 
+.ribbon-btn.flat {
+  background: transparent !important;
+  border: none !important;
+}
+
 .ribbon-tabs .ant-tabs-nav {
   margin: 0;
 }
