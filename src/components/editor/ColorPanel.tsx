@@ -9,6 +9,7 @@ interface HarmonyRule {
 interface SwatchGroup {
   name: string
   colors: string[]
+  entries?: { name: string; color: string }[]
 }
 
 const harmonyRules: HarmonyRule[] = [
@@ -32,6 +33,26 @@ const swatchGroups: SwatchGroup[] = [
   {
     name: 'Accents',
     colors: ['#f72585', '#3a86ff', '#06d6a0', '#ff9f1c', '#ffd166'],
+  },
+  {
+    name: 'Swatch Group 1',
+    colors: [],
+    entries: [
+      { name: 'C=28 M=100 Y=100 K=0', color: '#a50a0a' },
+      { name: 'C=42 M=93 Y=70 K=25', color: '#6d1b2a' },
+      { name: 'C=51 M=59 Y=79 K=35', color: '#5b4025' },
+      { name: 'C=73 M=5 Y=63 K=18', color: '#2a7f55' },
+      { name: 'C=71 M=58 Y=0 K=20', color: '#3a5fa1' },
+    ],
+  },
+  {
+    name: 'Swatch Group 2',
+    colors: [],
+    entries: [
+      { name: 'C=28 M=100 Y=100 K=0', color: '#a50a0a' },
+      { name: 'C=42 M=93 Y=70 K=25', color: '#6d1b2a' },
+      { name: 'C=51 M=59 Y=79 K=35', color: '#5b4025' },
+    ],
   },
 ]
 
@@ -127,17 +148,33 @@ export function ColorPanel({ current, onSelectColor }: ColorPanelProps) {
           {swatchGroups.map((group) => (
             <div className="swatch-group" key={group.name}>
               <div className="swatch-group-title">{group.name}</div>
-              <div className="swatch-grid">
-                {group.colors.map((c) => (
-                  <button
-                    key={c + group.name}
-                    className={`swatch ${c === current ? 'active' : ''}`}
-                    style={{ background: c }}
-                    onClick={() => apply(c)}
-                    aria-label={`${group.name} ${c}`}
-                  />
-                ))}
-              </div>
+              {group.entries ? (
+                <div className="swatch-tiles">
+                  {group.entries.map((entry) => (
+                    <button
+                      key={entry.name}
+                      className="swatch-tile"
+                      onClick={() => apply(entry.color)}
+                      aria-label={entry.name}
+                    >
+                      <span className="swatch-square" style={{ background: entry.color }} />
+                      <span className="swatch-name">{entry.name}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="swatch-grid">
+                  {group.colors.map((c) => (
+                    <button
+                      key={c + group.name}
+                      className={`swatch ${c === current ? 'active' : ''}`}
+                      style={{ background: c }}
+                      onClick={() => apply(c)}
+                      aria-label={`${group.name} ${c}`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -178,6 +215,40 @@ export function ColorPanel({ current, onSelectColor }: ColorPanelProps) {
           onChange={(e) => apply(e.target.value)}
           aria-label="Custom color picker"
         />
+      </div>
+
+      <div className="color-section spectrum">
+        <div className="color-label">Spectrum</div>
+        <div className="spectrum-panel" />
+      </div>
+
+      <div className="color-section">
+        <div className="color-label">Shades & Tints</div>
+        <div className="shade-tint-grid">
+          {Array.from({ length: 6 }).map((_, row) => (
+            <div className="shade-row" key={row}>
+              {Array.from({ length: 10 }).map((__, col) => {
+                const factor = (col + 1) / 10
+                const tint = (hex: string) => {
+                  const num = Number.parseInt(hex.replace('#', ''), 16)
+                  const r = (num >> 16) & 255
+                  const g = (num >> 8) & 255
+                  const b = num & 255
+                  const mix = (c: number) => Math.round(c + (255 - c) * factor)
+                  return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`
+                }
+                return (
+                  <button
+                    key={`${row}-${col}`}
+                    className="shade-cell"
+                    style={{ background: tint(current || '#4aa3ff') }}
+                    onClick={() => apply(tint(current || '#4aa3ff'))}
+                  />
+                )
+              })}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )

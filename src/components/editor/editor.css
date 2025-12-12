@@ -186,6 +186,34 @@
   gap: 6px;
 }
 
+.swatch-tiles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.swatch-tile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.swatch-square {
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.swatch-name {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
 .cmyk-controls {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -223,6 +251,32 @@
   background: var(--panel3);
   padding: 4px 8px;
   border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.spectrum-panel {
+  height: 180px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+  filter: saturate(1.2);
+}
+
+.shade-tint-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.shade-row {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
+}
+
+.shade-cell {
+  height: 18px;
+  border-radius: 4px;
   border: 1px solid var(--line);
 }
 
