@@ -1,7 +1,9 @@
-import { useEffect } from 'react'
-import { Layout, Button, Typography, Space, Grid, theme, Card } from 'antd'
+import { useEffect, useRef, useState } from 'react'
+import { Layout, Button, Typography, Space, Grid, theme, Card, Collapse, Drawer } from 'antd'
+import { BgColorsOutlined } from '@ant-design/icons'
 import { useAuthStore } from './store/auth'
-import { EditorCanvas } from './components/editor/EditorCanvas'
+import { EditorCanvas, type EditorHandle } from './components/editor/EditorCanvas'
+import { ColorPanel } from './components/editor/ColorPanel'
 import './styles/globals.css'
 
 const { Header, Content, Sider } = Layout
@@ -45,6 +47,14 @@ function App() {
   const screens = Grid.useBreakpoint()
   const isMobile = !screens.md
   const { token } = theme.useToken()
+  const editorRef = useRef<EditorHandle>(null)
+  const [swatchColor, setSwatchColor] = useState('#4aa3ff')
+  const [paletteOpen, setPaletteOpen] = useState(false)
+
+  const handleSelectColor = (color: string) => {
+    setSwatchColor(color)
+    editorRef.current?.applyColor(color)
+  }
 
   useEffect(() => {
     init()
@@ -73,23 +83,50 @@ function App() {
           )}
 
           <Content className="workspace-main">
-            <EditorCanvas isMobile={isMobile} />
+            {isMobile && (
+              <div className="mobile-toolbar">
+                <Button
+                  size="small"
+                  icon={<BgColorsOutlined />}
+                  onClick={() => setPaletteOpen(true)}
+                >
+                  Palette
+                </Button>
+              </div>
+            )}
+            <EditorCanvas
+              ref={editorRef}
+              isMobile={isMobile}
+              swatchColor={swatchColor}
+              onSwatchChange={setSwatchColor}
+            />
           </Content>
 
           {!isMobile && (
             <Sider width={280} theme="dark" className="workspace-side">
-              <div className="panel-header">Companion</div>
-              <Card size="small" className="panel-card">
-                <div className="card-title">AI Brief</div>
-                <div className="card-sub">
-                  Deliver concise, voice-aware suggestions. Keep tone consistent with the voice
-                  profile.
-                </div>
-              </Card>
-              <Card size="small" className="panel-card ant-card-ghost dashed">
-                <div className="card-title">Voice Profile</div>
-                <div className="card-sub">Guardian prompt + cliche filter</div>
-              </Card>
+              <Collapse
+                defaultActiveKey={['color', 'companion']}
+                bordered={false}
+                ghost
+                expandIconPosition="end"
+              >
+                <Collapse.Panel header="Color" key="color">
+                  <ColorPanel current={swatchColor} onSelectColor={handleSelectColor} />
+                </Collapse.Panel>
+                <Collapse.Panel header="Companion" key="companion">
+                  <Card size="small" className="panel-card">
+                    <div className="card-title">AI Brief</div>
+                    <div className="card-sub">
+                      Deliver concise, voice-aware suggestions. Keep tone consistent with the voice
+                      profile.
+                    </div>
+                  </Card>
+                  <Card size="small" className="panel-card ant-card-ghost dashed">
+                    <div className="card-title">Voice Profile</div>
+                    <div className="card-sub">Guardian prompt + cliche filter</div>
+                  </Card>
+                </Collapse.Panel>
+              </Collapse>
             </Sider>
           )}
 
@@ -106,6 +143,18 @@ function App() {
             </div>
           )}
         </Layout>
+      )}
+
+      {isMobile && (
+        <Drawer
+          title="Color & Harmony"
+          placement="right"
+          open={paletteOpen}
+          onClose={() => setPaletteOpen(false)}
+          width="80%"
+        >
+          <ColorPanel current={swatchColor} onSelectColor={handleSelectColor} />
+        </Drawer>
       )}
     </Layout>
   )

@@ -249,10 +249,11 @@
   font-family: var(--font-editor);
   font-size: 17px;
   line-height: var(--line-height, 1.6);
+  hyphens: var(--hyphenate, auto);
 }
 
 .page .ProseMirror p {
-  margin: 0 0 var(--para-spacing, 14px) 0;
+  margin: var(--para-before, 0px) 0 var(--para-after, 14px) 0;
 }
 
 .page .ProseMirror h1 {

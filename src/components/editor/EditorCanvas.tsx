@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { forwardRef, useImperativeHandle, useMemo, useState } from 'react'
 import { useEditor, EditorContent, type Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
@@ -11,52 +11,59 @@ import TextStyle from '@tiptap/extension-text-style'
 import Typography from '@tiptap/extension-typography'
 import CharacterCount from '@tiptap/extension-character-count'
 import {
-  Bold,
-  Italic,
-  Underline as UnderlineIcon,
-  Strikethrough,
-  Highlighter,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  AlignJustify,
-  List,
-  ListOrdered,
-  Indent,
-  Outdent,
-  Eraser,
-  Palette,
-} from 'lucide-react'
+  BoldOutlined,
+  ItalicOutlined,
+  UnderlineOutlined,
+  StrikethroughOutlined,
+  HighlightOutlined,
+  AlignLeftOutlined,
+  AlignCenterOutlined,
+  AlignRightOutlined,
+  ColumnWidthOutlined,
+  UnorderedListOutlined,
+  OrderedListOutlined,
+  FieldBinaryOutlined,
+  ClearOutlined,
+  BgColorsOutlined,
+} from '@ant-design/icons'
+import { Button, Space, Tooltip, InputNumber, Switch } from 'antd'
 import './editor.css'
-
-import { ColorPanel } from './ColorPanel'
 
 type AlignOption = 'left' | 'center' | 'right' | 'justify'
 
 interface EditorCanvasProps {
   isMobile?: boolean
+  swatchColor: string
+  onSwatchChange?: (color: string) => void
 }
 
-interface RibbonButtonProps {
+export interface EditorHandle {
+  applyColor: (color: string) => void
+}
+
+const RibbonButton = ({
+  label,
+  icon,
+  active,
+  onClick,
+  size = 'small',
+}: {
   label: string
   icon: React.ReactNode
   active?: boolean
   onClick: () => void
-}
-
-function RibbonButton({ label, icon, active, onClick }: RibbonButtonProps) {
-  return (
-    <button
-      className={`ribbon-btn ${active ? 'active' : ''}`}
+  size?: 'small' | 'middle'
+}) => (
+  <Tooltip title={label}>
+    <Button
+      size={size}
+      type={active ? 'primary' : 'default'}
+      icon={icon}
       onClick={onClick}
-      type="button"
-      title={label}
       aria-label={label}
-    >
-      {icon}
-    </button>
-  )
-}
+    />
+  </Tooltip>
+)
 
 function useRibbon(editor: Editor | null) {
   const setAlign = (align: AlignOption) => editor?.chain().focus().setTextAlign(align).run()
@@ -79,10 +86,14 @@ function useRibbon(editor: Editor | null) {
   }
 }
 
-export function EditorCanvas({ isMobile }: EditorCanvasProps) {
-  const [swatchColor, setSwatchColor] = useState('#4aa3ff')
+export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
+  ({ isMobile, swatchColor, onSwatchChange }, ref) => {
+  const btnSize: 'small' | 'middle' = isMobile ? 'small' : 'middle'
   const [lineHeight, setLineHeight] = useState(1.6)
   const [paraSpacing, setParaSpacing] = useState(14)
+  const [paraBefore, setParaBefore] = useState(0)
+  const [paraAfter, setParaAfter] = useState(14)
+  const [hyphenate, setHyphenate] = useState(true)
 
   const editor = useEditor({
     extensions: [
@@ -120,9 +131,17 @@ export function EditorCanvas({ isMobile }: EditorCanvasProps) {
   const ribbon = useRibbon(editor)
 
   const applyColor = (color: string) => {
-    setSwatchColor(color)
+    onSwatchChange?.(color)
     editor?.chain().focus().setColor(color).run()
   }
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      applyColor: (color: string) => applyColor(color),
+    }),
+    [editor],
+  )
 
   const applyLineHeight = (value: number) => {
     setLineHeight(value)
@@ -143,106 +162,153 @@ export function EditorCanvas({ isMobile }: EditorCanvasProps) {
   return (
     <div className="editor-shell">
       <div className="ribbon">
-        <div className="ribbon-group">
+        <Space className="ribbon-group" size={6} wrap>
           <RibbonButton
             label="Bold"
-            icon={<Bold size={16} />}
+            icon={<BoldOutlined />}
             active={editor?.isActive('bold')}
             onClick={ribbon.bold}
+            size={btnSize}
           />
           <RibbonButton
             label="Italic"
-            icon={<Italic size={16} />}
+            icon={<ItalicOutlined />}
             active={editor?.isActive('italic')}
             onClick={ribbon.italic}
+            size={btnSize}
           />
           <RibbonButton
             label="Underline"
-            icon={<UnderlineIcon size={16} />}
+            icon={<UnderlineOutlined />}
             active={editor?.isActive('underline')}
             onClick={ribbon.underline}
+            size={btnSize}
           />
           <RibbonButton
             label="Strikethrough"
-            icon={<Strikethrough size={16} />}
+            icon={<StrikethroughOutlined />}
             active={editor?.isActive('strike')}
             onClick={ribbon.strike}
+            size={btnSize}
           />
           <RibbonButton
             label="Highlight"
-            icon={<Highlighter size={16} />}
+            icon={<HighlightOutlined />}
             active={editor?.isActive('highlight')}
             onClick={ribbon.highlight}
+            size={btnSize}
           />
-        </div>
+        </Space>
 
-        <div className="ribbon-group">
-          <RibbonButton label="Align left" icon={<AlignLeft size={16} />} onClick={ribbon.alignLeft} />
+        <Space className="ribbon-group" size={6} wrap>
+          <RibbonButton
+            label="Align left"
+            icon={<AlignLeftOutlined />}
+            onClick={ribbon.alignLeft}
+            size={btnSize}
+          />
           <RibbonButton
             label="Align center"
-            icon={<AlignCenter size={16} />}
+            icon={<AlignCenterOutlined />}
             onClick={ribbon.alignCenter}
+            size={btnSize}
           />
           <RibbonButton
             label="Align right"
-            icon={<AlignRight size={16} />}
+            icon={<AlignRightOutlined />}
             onClick={ribbon.alignRight}
+            size={btnSize}
           />
           <RibbonButton
             label="Justify"
-            icon={<AlignJustify size={16} />}
+            icon={<ColumnWidthOutlined />}
             onClick={ribbon.alignJustify}
+            size={btnSize}
           />
-        </div>
+        </Space>
 
-        <div className="ribbon-group">
-          <RibbonButton label="Bullets" icon={<List size={16} />} onClick={ribbon.bullet} />
-          <RibbonButton label="Numbered" icon={<ListOrdered size={16} />} onClick={ribbon.ordered} />
-          <RibbonButton label="Indent" icon={<Indent size={16} />} onClick={ribbon.indent} />
-          <RibbonButton label="Outdent" icon={<Outdent size={16} />} onClick={ribbon.outdent} />
-        </div>
+        <Space className="ribbon-group" size={6} wrap>
+          <RibbonButton label="Bullets" icon={<UnorderedListOutlined />} onClick={ribbon.bullet} size={btnSize} />
+          <RibbonButton label="Numbered" icon={<OrderedListOutlined />} onClick={ribbon.ordered} size={btnSize} />
+          <RibbonButton label="Indent" icon={<FieldBinaryOutlined />} onClick={ribbon.indent} size={btnSize} />
+          <RibbonButton label="Outdent" icon={<FieldBinaryOutlined rotate={180} />} onClick={ribbon.outdent} size={btnSize} />
+        </Space>
 
-        <div className="ribbon-group ghost">
-          <RibbonButton label="Clear" icon={<Eraser size={16} />} onClick={ribbon.clearFormatting} />
+        <Space className="ribbon-group ghost" size={6} wrap>
+          <RibbonButton label="Clear" icon={<ClearOutlined />} onClick={ribbon.clearFormatting} size={btnSize} />
           <RibbonButton
-            label="Text color"
-            icon={<Palette size={16} />}
+            label="Apply text color"
+            icon={<BgColorsOutlined />}
             onClick={() => applyColor(swatchColor)}
+            size={btnSize}
           />
-        </div>
+        </Space>
 
-        <div className="ribbon-group controls">
+        <Space className="ribbon-group controls" size={8} wrap>
           <label className="control">
             <span>Line</span>
-            <input
-              type="number"
-              step="0.1"
-              min="1"
-              max="3"
+            <InputNumber
+              size="small"
+              step={0.1}
+              min={1}
+              max={3}
               value={lineHeight}
-              onChange={(e) => applyLineHeight(Number.parseFloat(e.target.value || '1.6'))}
+              onChange={(v) => applyLineHeight(Number(v) || 1.6)}
+            />
+          </label>
+          <label className="control">
+            <span>Before</span>
+            <InputNumber
+              size="small"
+              step={2}
+              min={0}
+              max={48}
+              value={paraBefore}
+              onChange={(v) => setParaBefore(Number(v) || 0)}
+            />
+          </label>
+          <label className="control">
+            <span>After</span>
+            <InputNumber
+              size="small"
+              step={2}
+              min={0}
+              max={48}
+              value={paraAfter}
+              onChange={(v) => setParaAfter(Number(v) || 14)}
             />
           </label>
           <label className="control">
             <span>Spacing</span>
-            <input
-              type="number"
-              step="2"
-              min="0"
-              max="48"
+            <InputNumber
+              size="small"
+              step={2}
+              min={0}
+              max={48}
               value={paraSpacing}
-              onChange={(e) => applyParaSpacing(Number.parseInt(e.target.value || '14', 10))}
+              onChange={(v) => applyParaSpacing(Number(v) || 14)}
             />
           </label>
-        </div>
-      </div>
-
-      <div className={`color-panel-wrap ${isMobile ? 'mobile' : ''}`}>
-        <ColorPanel onSelectColor={applyColor} current={swatchColor} />
+          <label className="control switch">
+            <span>Hyphenate</span>
+            <Switch size="small" checked={hyphenate} onChange={setHyphenate} />
+          </label>
+        </Space>
       </div>
 
       <div className="page-wrap">
-        <div className="page" style={{ ['--line-height' as string]: lineHeight, ['--para-spacing' as string]: `${paraSpacing}px` }}>
+        <div
+          className="page"
+          style={
+            {
+              '--line-height': lineHeight,
+              '--para-spacing': `${paraSpacing}px`,
+              '--para-before': `${paraBefore}px`,
+              '--para-after': `${paraAfter}px`,
+              '--hyphenate': hyphenate ? 'auto' : 'manual',
+            } as React.CSSProperties
+          }
+        >
           <EditorContent editor={editor} />
         </div>
       </div>
@@ -253,4 +319,4 @@ export function EditorCanvas({ isMobile }: EditorCanvasProps) {
       </div>
     </div>
   )
-}
+})

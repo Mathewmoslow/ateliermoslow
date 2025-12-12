@@ -325,6 +325,12 @@ input:focus, textarea:focus {
   padding: 12px;
 }
 
+.mobile-toolbar {
+  padding: 8px 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 @media (max-width: 992px) {
   .app-header {
     padding: 10px 12px !important;
