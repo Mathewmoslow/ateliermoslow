@@ -106,6 +106,9 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
   const [tracking, setTracking] = useState(0)
   const [baselineShift, setBaselineShift] = useState(0)
   const [textCase, setTextCase] = useState<'none' | 'uppercase' | 'lowercase' | 'small-caps'>('none')
+  const [kerning, setKerning] = useState<'normal' | 'none'>('normal')
+  const [indentLeft, setIndentLeft] = useState(0)
+  const [indentRight, setIndentRight] = useState(0)
   const editor = useEditor({
     extensions: [
       Color.configure({ types: ['textStyle'] }),
@@ -183,6 +186,21 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
       attrs.fontVariant = 'normal'
     }
     editor?.chain().focus().setMark('textStyle', attrs).run()
+  }
+
+  const applyKerning = (value: 'normal' | 'none') => {
+    setKerning(value)
+    editor?.chain().focus().setMark('textStyle', { fontKerning: value }).run()
+  }
+
+  const applyIndentLeft = (value: number) => {
+    setIndentLeft(value)
+    editor?.chain().focus().setMark('textStyle', { marginLeft: `${value}px` }).run()
+  }
+
+  const applyIndentRight = (value: number) => {
+    setIndentRight(value)
+    editor?.chain().focus().setMark('textStyle', { marginRight: `${value}px` }).run()
   }
 
 
@@ -333,6 +351,19 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
                 ]}
               />
             </label>
+            <label className="control">
+              <span>Kerning</span>
+              <Select
+                size="small"
+                value={kerning}
+                style={{ width: 120 }}
+                onChange={(v) => applyKerning(v as any)}
+                options={[
+                  { value: 'normal', label: 'Metrics' },
+                  { value: 'none', label: 'None' },
+                ]}
+              />
+            </label>
           </Space>
         </Space>
       ),
@@ -369,11 +400,25 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
             </label>
             <label className="control">
               <span>Indent L</span>
-              <InputNumber size="small" step={1} min={0} max={60} value={0} disabled />
+              <InputNumber
+                size="small"
+                step={1}
+                min={0}
+                max={60}
+                value={indentLeft}
+                onChange={(v) => applyIndentLeft(Number(v) || 0)}
+              />
             </label>
             <label className="control">
               <span>Indent R</span>
-              <InputNumber size="small" step={1} min={0} max={60} value={0} disabled />
+              <InputNumber
+                size="small"
+                step={1}
+                min={0}
+                max={60}
+                value={indentRight}
+                onChange={(v) => applyIndentRight(Number(v) || 0)}
+              />
             </label>
             <label className="control switch">
               <span>Hyphenate</span>
