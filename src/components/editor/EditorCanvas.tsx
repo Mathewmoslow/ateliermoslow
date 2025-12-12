@@ -26,7 +26,7 @@ import {
   ClearOutlined,
   BgColorsOutlined,
 } from '@ant-design/icons'
-import { Button, Space, Tooltip, InputNumber, Switch, Tabs } from 'antd'
+import { Button, Space, Tooltip, InputNumber, Switch, Tabs, Select, Slider } from 'antd'
 import './editor.css'
 
 type AlignOption = 'left' | 'center' | 'right' | 'justify'
@@ -47,17 +47,20 @@ const RibbonButton = ({
   active,
   onClick,
   size = 'small',
+  flat = true,
 }: {
   label: string
   icon: React.ReactNode
   active?: boolean
   onClick: () => void
   size?: 'small' | 'middle'
+  flat?: boolean
 }) => (
   <Tooltip title={label}>
     <Button
       size={size}
-      type={active ? 'primary' : 'default'}
+      type={flat ? 'text' : active ? 'primary' : 'default'}
+      className={`ribbon-btn ${flat ? 'flat' : ''} ${active ? 'active' : ''}`}
       icon={icon}
       onClick={onClick}
       aria-label={label}
@@ -94,6 +97,9 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
   const [paraBefore, setParaBefore] = useState(0)
   const [paraAfter, setParaAfter] = useState(14)
   const [hyphenate, setHyphenate] = useState(true)
+  const [fontFamily, setFontFamily] = useState('Inter Tight')
+  const [fontSize, setFontSize] = useState(17)
+  const [fontWeight, setFontWeight] = useState(400)
 
   const editor = useEditor({
     extensions: [
@@ -135,6 +141,21 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
     editor?.chain().focus().setColor(color).run()
   }
 
+  const applyFontFamily = (family: string) => {
+    setFontFamily(family)
+    editor?.chain().focus().setMark('textStyle', { fontFamily: family }).run()
+  }
+
+  const applyFontSize = (size: number) => {
+    setFontSize(size)
+    editor?.chain().focus().setMark('textStyle', { fontSize: `${size}px` }).run()
+  }
+
+  const applyFontWeight = (weight: number) => {
+    setFontWeight(weight)
+    editor?.chain().focus().setMark('textStyle', { fontWeight: `${weight}` }).run()
+  }
+
   useImperativeHandle(
     ref,
     () => ({
@@ -165,6 +186,56 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
       label: 'Type',
       children: (
         <Space className="ribbon-row" size={8} wrap>
+          <Space className="ribbon-group flat" size={8} wrap>
+            <label className="control">
+              <span>Font</span>
+              <Select
+                size="small"
+                value={fontFamily}
+                style={{ width: 220 }}
+                onChange={applyFontFamily}
+                options={[
+                  { value: 'Inter Tight', label: <span style={{ fontFamily: 'Inter Tight' }}>Inter Tight</span> },
+                  { value: 'IBM Plex Sans Condensed', label: <span style={{ fontFamily: 'IBM Plex Sans Condensed' }}>IBM Plex Sans Condensed</span> },
+                  { value: 'Georgia', label: <span style={{ fontFamily: 'Georgia' }}>Georgia</span> },
+                  { value: 'Times New Roman', label: <span style={{ fontFamily: 'Times New Roman' }}>Times New Roman</span> },
+                  { value: 'Arial', label: <span style={{ fontFamily: 'Arial' }}>Arial</span> },
+                ]}
+              />
+            </label>
+            <label className="control">
+              <span>Weight</span>
+              <Slider
+                min={200}
+                max={800}
+                step={100}
+                value={fontWeight}
+                onChange={(v) => applyFontWeight(Array.isArray(v) ? v[0] : v)}
+                style={{ width: 140 }}
+              />
+            </label>
+            <label className="control">
+              <span>Size</span>
+              <Space size={6}>
+                <InputNumber
+                  size="small"
+                  min={8}
+                  max={96}
+                  value={fontSize}
+                  onChange={(v) => applyFontSize(Number(v) || 12)}
+                  style={{ width: 70 }}
+                />
+                <Slider
+                  min={8}
+                  max={96}
+                  step={1}
+                  value={fontSize}
+                  onChange={(v) => applyFontSize(Array.isArray(v) ? v[0] : v)}
+                  style={{ width: 140 }}
+                />
+              </Space>
+            </label>
+          </Space>
           <Space className="ribbon-group flat" size={6} wrap>
             <RibbonButton label="Bold" icon={<BoldOutlined />} active={editor?.isActive('bold')} onClick={ribbon.bold} size={btnSize} />
             <RibbonButton label="Italic" icon={<ItalicOutlined />} active={editor?.isActive('italic')} onClick={ribbon.italic} size={btnSize} />

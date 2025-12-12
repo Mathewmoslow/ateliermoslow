@@ -6,26 +6,27 @@
 
 .ribbon {
   display: flex;
-  gap: 12px;
-  padding: 8px 12px;
+  padding: 0 8px;
   background: var(--panel2);
   border-bottom: 1px solid var(--line);
-  flex-wrap: wrap;
 }
 
 .ribbon-group {
   display: flex;
   gap: 8px;
-  padding: 5px 6px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.03);
+  padding: 2px 4px;
   align-items: center;
 }
 
 .ribbon-group.ghost {
   border-style: dashed;
   opacity: 0.8;
+}
+
+.ribbon-group.flat {
+  border: none;
+  background: transparent;
+  padding: 0;
 }
 
 .ribbon-group.controls {
@@ -50,19 +51,20 @@
 }
 
 .ribbon-btn {
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  padding: 6px 8px;
-  background: var(--panel3);
-  color: var(--text);
   font-size: 13px;
-  display: grid;
-  place-items: center;
 }
 
 .ribbon-btn.active {
   border-color: var(--accent);
   background: rgba(74, 163, 255, 0.15);
+}
+
+.ribbon-tabs .ant-tabs-nav {
+  margin: 0;
+}
+
+.ribbon-row {
+  width: 100%;
 }
 
 .color-panel-wrap {
