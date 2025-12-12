@@ -77,6 +77,8 @@ function useRibbon(editor: Editor | null) {
 
 export function EditorCanvas() {
   const [swatchColor, setSwatchColor] = useState('#4aa3ff')
+  const [lineHeight, setLineHeight] = useState(1.6)
+  const [paraSpacing, setParaSpacing] = useState(14)
 
   const editor = useEditor({
     extensions: [
@@ -116,6 +118,14 @@ export function EditorCanvas() {
   const applyColor = (color: string) => {
     setSwatchColor(color)
     editor?.chain().focus().setColor(color).run()
+  }
+
+  const applyLineHeight = (value: number) => {
+    setLineHeight(value)
+  }
+
+  const applyParaSpacing = (value: number) => {
+    setParaSpacing(value)
   }
 
   const stats = useMemo(() => {
@@ -196,6 +206,31 @@ export function EditorCanvas() {
             onClick={() => applyColor(swatchColor)}
           />
         </div>
+
+        <div className="ribbon-group controls">
+          <label className="control">
+            <span>Line</span>
+            <input
+              type="number"
+              step="0.1"
+              min="1"
+              max="3"
+              value={lineHeight}
+              onChange={(e) => applyLineHeight(Number.parseFloat(e.target.value || '1.6'))}
+            />
+          </label>
+          <label className="control">
+            <span>Spacing</span>
+            <input
+              type="number"
+              step="2"
+              min="0"
+              max="48"
+              value={paraSpacing}
+              onChange={(e) => applyParaSpacing(Number.parseInt(e.target.value || '14', 10))}
+            />
+          </label>
+        </div>
       </div>
 
       <div className="color-panel-wrap">
@@ -203,7 +238,7 @@ export function EditorCanvas() {
       </div>
 
       <div className="page-wrap">
-        <div className="page">
+        <div className="page" style={{ ['--line-height' as string]: lineHeight, ['--para-spacing' as string]: `${paraSpacing}px` }}>
           <EditorContent editor={editor} />
         </div>
       </div>

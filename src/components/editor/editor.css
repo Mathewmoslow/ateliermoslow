@@ -19,11 +19,33 @@
   border: 1px solid var(--line);
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.03);
+  align-items: center;
 }
 
 .ribbon-group.ghost {
   border-style: dashed;
   opacity: 0.8;
+}
+
+.ribbon-group.controls {
+  gap: 10px;
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.control input {
+  width: 70px;
+  background: var(--panel3);
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 6px 8px;
 }
 
 .ribbon-btn {
@@ -225,11 +247,11 @@
   outline: none;
   font-family: var(--font-editor);
   font-size: 17px;
-  line-height: 1.6;
+  line-height: var(--line-height, 1.6);
 }
 
 .page .ProseMirror p {
-  margin: 0 0 14px 0;
+  margin: 0 0 var(--para-spacing, 14px) 0;
 }
 
 .page .ProseMirror h1 {
