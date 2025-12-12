@@ -23,7 +23,7 @@
   --radius-lg: 10px;
 
   /* Typography */
-  --font-ui: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-ui: 'Inter Tight', 'IBM Plex Sans Condensed', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   --font-editor: 'Georgia', 'Times New Roman', serif;
 
   /* Transitions */
@@ -154,6 +154,7 @@ input:focus, textarea:focus {
   padding: 12px 16px !important;
   background: var(--bg-darker) !important;
   border-bottom: 1px solid var(--line) !important;
+  min-height: 52px;
 }
 
 .app-title {
@@ -224,6 +225,7 @@ input:focus, textarea:focus {
 
 .workspace-shell {
   min-height: calc(100vh - 56px);
+  background: var(--bg);
 }
 
 .workspace-side {
@@ -264,6 +266,7 @@ input:focus, textarea:focus {
   flex-direction: column;
   min-width: 0;
   background: var(--bg);
+  overflow: hidden;
 }
 
 .panel-header {
@@ -337,5 +340,9 @@ input:focus, textarea:focus {
 
   .color-panel-wrap.mobile .color-panel {
     gap: 10px;
+  }
+
+  .workspace-main {
+    overflow: auto;
   }
 }
