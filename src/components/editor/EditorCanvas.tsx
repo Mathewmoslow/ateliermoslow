@@ -100,6 +100,9 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
   const [fontFamily, setFontFamily] = useState('Inter Tight')
   const [fontSize, setFontSize] = useState(17)
   const [fontWeight, setFontWeight] = useState(400)
+  const [tracking, setTracking] = useState(0)
+  const [baselineShift, setBaselineShift] = useState(0)
+  const [textCase, setTextCase] = useState<'none' | 'uppercase' | 'lowercase' | 'small-caps'>('none')
 
   const editor = useEditor({
     extensions: [
@@ -154,6 +157,30 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
   const applyFontWeight = (weight: number) => {
     setFontWeight(weight)
     editor?.chain().focus().setMark('textStyle', { fontWeight: `${weight}` }).run()
+  }
+
+  const applyTracking = (value: number) => {
+    setTracking(value)
+    editor?.chain().focus().setMark('textStyle', { letterSpacing: `${value}px` }).run()
+  }
+
+  const applyBaselineShift = (value: number) => {
+    setBaselineShift(value)
+    editor?.chain().focus().setMark('textStyle', { verticalAlign: `${value}px` }).run()
+  }
+
+  const applyTextCase = (value: 'none' | 'uppercase' | 'lowercase' | 'small-caps') => {
+    setTextCase(value)
+    const attrs: Record<string, string> = {}
+    if (value === 'uppercase' || value === 'lowercase') {
+      attrs.textTransform = value
+    } else if (value === 'small-caps') {
+      attrs.fontVariant = 'small-caps'
+    } else {
+      attrs.textTransform = 'none'
+      attrs.fontVariant = 'normal'
+    }
+    editor?.chain().focus().setMark('textStyle', attrs).run()
   }
 
   useImperativeHandle(
@@ -242,6 +269,67 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
             <RibbonButton label="Underline" icon={<UnderlineOutlined />} active={editor?.isActive('underline')} onClick={ribbon.underline} size={btnSize} />
             <RibbonButton label="Strikethrough" icon={<StrikethroughOutlined />} active={editor?.isActive('strike')} onClick={ribbon.strike} size={btnSize} />
             <RibbonButton label="Highlight" icon={<HighlightOutlined />} active={editor?.isActive('highlight')} onClick={ribbon.highlight} size={btnSize} />
+          </Space>
+          <Space className="ribbon-group flat" size={10} wrap>
+            <label className="control">
+              <span>Tracking</span>
+              <Space size={6}>
+                <InputNumber
+                  size="small"
+                  min={-5}
+                  max={20}
+                  step={0.5}
+                  value={tracking}
+                  onChange={(v) => applyTracking(Number(v) || 0)}
+                  style={{ width: 70 }}
+                />
+                <Slider
+                  min={-5}
+                  max={20}
+                  step={0.5}
+                  value={tracking}
+                  onChange={(v) => applyTracking(Array.isArray(v) ? v[0] : v)}
+                  style={{ width: 140 }}
+                />
+              </Space>
+            </label>
+            <label className="control">
+              <span>Baseline</span>
+              <Space size={6}>
+                <InputNumber
+                  size="small"
+                  min={-10}
+                  max={20}
+                  step={1}
+                  value={baselineShift}
+                  onChange={(v) => applyBaselineShift(Number(v) || 0)}
+                  style={{ width: 70 }}
+                />
+                <Slider
+                  min={-10}
+                  max={20}
+                  step={1}
+                  value={baselineShift}
+                  onChange={(v) => applyBaselineShift(Array.isArray(v) ? v[0] : v)}
+                  style={{ width: 140 }}
+                />
+              </Space>
+            </label>
+            <label className="control">
+              <span>Case</span>
+              <Select
+                size="small"
+                value={textCase}
+                style={{ width: 140 }}
+                onChange={(v) => applyTextCase(v as any)}
+                options={[
+                  { value: 'none', label: 'Normal' },
+                  { value: 'uppercase', label: 'Uppercase' },
+                  { value: 'lowercase', label: 'Lowercase' },
+                  { value: 'small-caps', label: 'Small Caps' },
+                ]}
+              />
+            </label>
           </Space>
         </Space>
       ),

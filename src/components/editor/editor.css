@@ -50,6 +50,12 @@
   padding: 6px 8px;
 }
 
+.control .ant-input-number,
+.control .ant-select,
+.control .ant-slider {
+  background: var(--panel3);
+}
+
 .ribbon-btn {
   font-size: 13px;
 }
