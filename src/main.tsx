@@ -12,7 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         hashed: false,
         token: {
           fontFamily: 'Inter Tight, IBM Plex Sans Condensed, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif',
-          borderRadius: 6,
+          borderRadius: 4,
           paddingXS: 6,
           paddingSM: 8,
           padding: 12,

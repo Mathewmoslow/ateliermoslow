@@ -26,7 +26,7 @@ import {
   ClearOutlined,
   BgColorsOutlined,
 } from '@ant-design/icons'
-import { Button, Space, Tooltip, InputNumber, Switch } from 'antd'
+import { Button, Space, Tooltip, InputNumber, Switch, Tabs } from 'antd'
 import './editor.css'
 
 type AlignOption = 'left' | 'center' | 'right' | 'justify'
@@ -159,141 +159,80 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
     return { words, chars }
   }, [editor, editor?.state?.doc])
 
+  const ribbonTabs = [
+    {
+      key: 'type',
+      label: 'Type',
+      children: (
+        <Space className="ribbon-row" size={8} wrap>
+          <Space className="ribbon-group flat" size={6} wrap>
+            <RibbonButton label="Bold" icon={<BoldOutlined />} active={editor?.isActive('bold')} onClick={ribbon.bold} size={btnSize} />
+            <RibbonButton label="Italic" icon={<ItalicOutlined />} active={editor?.isActive('italic')} onClick={ribbon.italic} size={btnSize} />
+            <RibbonButton label="Underline" icon={<UnderlineOutlined />} active={editor?.isActive('underline')} onClick={ribbon.underline} size={btnSize} />
+            <RibbonButton label="Strikethrough" icon={<StrikethroughOutlined />} active={editor?.isActive('strike')} onClick={ribbon.strike} size={btnSize} />
+            <RibbonButton label="Highlight" icon={<HighlightOutlined />} active={editor?.isActive('highlight')} onClick={ribbon.highlight} size={btnSize} />
+          </Space>
+        </Space>
+      ),
+    },
+    {
+      key: 'paragraph',
+      label: 'Paragraph',
+      children: (
+        <Space className="ribbon-row" size={8} wrap>
+          <Space className="ribbon-group flat" size={6} wrap>
+            <RibbonButton label="Align left" icon={<AlignLeftOutlined />} onClick={ribbon.alignLeft} size={btnSize} />
+            <RibbonButton label="Align center" icon={<AlignCenterOutlined />} onClick={ribbon.alignCenter} size={btnSize} />
+            <RibbonButton label="Align right" icon={<AlignRightOutlined />} onClick={ribbon.alignRight} size={btnSize} />
+            <RibbonButton label="Justify" icon={<ColumnWidthOutlined />} onClick={ribbon.alignJustify} size={btnSize} />
+          </Space>
+          <Space className="ribbon-group flat controls" size={8} wrap>
+            <label className="control">
+              <span>Line</span>
+              <InputNumber size="small" step={0.1} min={1} max={3} value={lineHeight} onChange={(v) => applyLineHeight(Number(v) || 1.6)} />
+            </label>
+            <label className="control">
+              <span>Before</span>
+              <InputNumber size="small" step={2} min={0} max={48} value={paraBefore} onChange={(v) => setParaBefore(Number(v) || 0)} />
+            </label>
+            <label className="control">
+              <span>After</span>
+              <InputNumber size="small" step={2} min={0} max={48} value={paraAfter} onChange={(v) => setParaAfter(Number(v) || 14)} />
+            </label>
+            <label className="control">
+              <span>Spacing</span>
+              <InputNumber size="small" step={2} min={0} max={48} value={paraSpacing} onChange={(v) => applyParaSpacing(Number(v) || 14)} />
+            </label>
+            <label className="control switch">
+              <span>Hyphenate</span>
+              <Switch size="small" checked={hyphenate} onChange={setHyphenate} />
+            </label>
+          </Space>
+        </Space>
+      ),
+    },
+    {
+      key: 'lists',
+      label: 'Lists',
+      children: (
+        <Space className="ribbon-row" size={8} wrap>
+          <Space className="ribbon-group flat" size={6} wrap>
+            <RibbonButton label="Bullets" icon={<UnorderedListOutlined />} onClick={ribbon.bullet} size={btnSize} />
+            <RibbonButton label="Numbered" icon={<OrderedListOutlined />} onClick={ribbon.ordered} size={btnSize} />
+            <RibbonButton label="Indent" icon={<FieldBinaryOutlined />} onClick={ribbon.indent} size={btnSize} />
+            <RibbonButton label="Outdent" icon={<FieldBinaryOutlined rotate={180} />} onClick={ribbon.outdent} size={btnSize} />
+            <RibbonButton label="Clear" icon={<ClearOutlined />} onClick={ribbon.clearFormatting} size={btnSize} />
+            <RibbonButton label="Text color" icon={<BgColorsOutlined />} onClick={() => applyColor(swatchColor)} size={btnSize} />
+          </Space>
+        </Space>
+      ),
+    },
+  ]
+
   return (
     <div className="editor-shell">
-      <div className="ribbon">
-        <Space className="ribbon-group" size={6} wrap>
-          <RibbonButton
-            label="Bold"
-            icon={<BoldOutlined />}
-            active={editor?.isActive('bold')}
-            onClick={ribbon.bold}
-            size={btnSize}
-          />
-          <RibbonButton
-            label="Italic"
-            icon={<ItalicOutlined />}
-            active={editor?.isActive('italic')}
-            onClick={ribbon.italic}
-            size={btnSize}
-          />
-          <RibbonButton
-            label="Underline"
-            icon={<UnderlineOutlined />}
-            active={editor?.isActive('underline')}
-            onClick={ribbon.underline}
-            size={btnSize}
-          />
-          <RibbonButton
-            label="Strikethrough"
-            icon={<StrikethroughOutlined />}
-            active={editor?.isActive('strike')}
-            onClick={ribbon.strike}
-            size={btnSize}
-          />
-          <RibbonButton
-            label="Highlight"
-            icon={<HighlightOutlined />}
-            active={editor?.isActive('highlight')}
-            onClick={ribbon.highlight}
-            size={btnSize}
-          />
-        </Space>
-
-        <Space className="ribbon-group" size={6} wrap>
-          <RibbonButton
-            label="Align left"
-            icon={<AlignLeftOutlined />}
-            onClick={ribbon.alignLeft}
-            size={btnSize}
-          />
-          <RibbonButton
-            label="Align center"
-            icon={<AlignCenterOutlined />}
-            onClick={ribbon.alignCenter}
-            size={btnSize}
-          />
-          <RibbonButton
-            label="Align right"
-            icon={<AlignRightOutlined />}
-            onClick={ribbon.alignRight}
-            size={btnSize}
-          />
-          <RibbonButton
-            label="Justify"
-            icon={<ColumnWidthOutlined />}
-            onClick={ribbon.alignJustify}
-            size={btnSize}
-          />
-        </Space>
-
-        <Space className="ribbon-group" size={6} wrap>
-          <RibbonButton label="Bullets" icon={<UnorderedListOutlined />} onClick={ribbon.bullet} size={btnSize} />
-          <RibbonButton label="Numbered" icon={<OrderedListOutlined />} onClick={ribbon.ordered} size={btnSize} />
-          <RibbonButton label="Indent" icon={<FieldBinaryOutlined />} onClick={ribbon.indent} size={btnSize} />
-          <RibbonButton label="Outdent" icon={<FieldBinaryOutlined rotate={180} />} onClick={ribbon.outdent} size={btnSize} />
-        </Space>
-
-        <Space className="ribbon-group ghost" size={6} wrap>
-          <RibbonButton label="Clear" icon={<ClearOutlined />} onClick={ribbon.clearFormatting} size={btnSize} />
-          <RibbonButton
-            label="Apply text color"
-            icon={<BgColorsOutlined />}
-            onClick={() => applyColor(swatchColor)}
-            size={btnSize}
-          />
-        </Space>
-
-        <Space className="ribbon-group controls" size={8} wrap>
-          <label className="control">
-            <span>Line</span>
-            <InputNumber
-              size="small"
-              step={0.1}
-              min={1}
-              max={3}
-              value={lineHeight}
-              onChange={(v) => applyLineHeight(Number(v) || 1.6)}
-            />
-          </label>
-          <label className="control">
-            <span>Before</span>
-            <InputNumber
-              size="small"
-              step={2}
-              min={0}
-              max={48}
-              value={paraBefore}
-              onChange={(v) => setParaBefore(Number(v) || 0)}
-            />
-          </label>
-          <label className="control">
-            <span>After</span>
-            <InputNumber
-              size="small"
-              step={2}
-              min={0}
-              max={48}
-              value={paraAfter}
-              onChange={(v) => setParaAfter(Number(v) || 14)}
-            />
-          </label>
-          <label className="control">
-            <span>Spacing</span>
-            <InputNumber
-              size="small"
-              step={2}
-              min={0}
-              max={48}
-              value={paraSpacing}
-              onChange={(v) => applyParaSpacing(Number(v) || 14)}
-            />
-          </label>
-          <label className="control switch">
-            <span>Hyphenate</span>
-            <Switch size="small" checked={hyphenate} onChange={setHyphenate} />
-          </label>
-        </Space>
+      <div className="ribbon ribbon-tabs">
+        <Tabs items={ribbonTabs} size="small" defaultActiveKey="type" animated={false} tabBarStyle={{ marginBottom: 0 }} />
       </div>
 
       <div className="page-wrap">

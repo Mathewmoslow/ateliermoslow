@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Layout, Button, Typography, Space, Grid, theme, Card, Collapse, Drawer } from 'antd'
+import { Layout, Button, Typography, Space, Grid, theme, Card, Drawer } from 'antd'
 import { BgColorsOutlined } from '@ant-design/icons'
 import { useAuthStore } from './store/auth'
 import { EditorCanvas, type EditorHandle } from './components/editor/EditorCanvas'
@@ -16,7 +16,25 @@ function ShellHeader() {
 
   return (
     <Header className="app-header">
-      <div className="app-title">Atelier Moslow</div>
+      <Space align="center" size={10}>
+        <div className="app-title">Atelier Moslow</div>
+        <Space size={6} className="app-menu">
+          <Button type="text" size="small" disabled>
+            File
+          </Button>
+          <Button type="text" size="small" disabled>
+            Edit
+          </Button>
+          <Button
+            type="text"
+            size="small"
+            icon={<BgColorsOutlined />}
+            onClick={() => window.dispatchEvent(new CustomEvent('open-palette'))}
+          >
+            View
+          </Button>
+        </Space>
+      </Space>
       <Space align="center" size={12}>
         {user && !isMobile && <Text type="secondary">{user.email}</Text>}
         {user ? (
@@ -58,6 +76,9 @@ function App() {
 
   useEffect(() => {
     init()
+    const openPalette = () => setPaletteOpen(true)
+    window.addEventListener('open-palette', openPalette as EventListener)
+    return () => window.removeEventListener('open-palette', openPalette as EventListener)
   }, [init])
 
   return (
@@ -104,29 +125,18 @@ function App() {
 
           {!isMobile && (
             <Sider width={280} theme="dark" className="workspace-side">
-              <Collapse
-                defaultActiveKey={['color', 'companion']}
-                bordered={false}
-                ghost
-                expandIconPosition="end"
-              >
-                <Collapse.Panel header="Color" key="color">
-                  <ColorPanel current={swatchColor} onSelectColor={handleSelectColor} />
-                </Collapse.Panel>
-                <Collapse.Panel header="Companion" key="companion">
-                  <Card size="small" className="panel-card">
-                    <div className="card-title">AI Brief</div>
-                    <div className="card-sub">
-                      Deliver concise, voice-aware suggestions. Keep tone consistent with the voice
-                      profile.
-                    </div>
-                  </Card>
-                  <Card size="small" className="panel-card ant-card-ghost dashed">
-                    <div className="card-title">Voice Profile</div>
-                    <div className="card-sub">Guardian prompt + cliche filter</div>
-                  </Card>
-                </Collapse.Panel>
-              </Collapse>
+              <div className="panel-header">Companion</div>
+              <Card size="small" className="panel-card">
+                <div className="card-title">AI Brief</div>
+                <div className="card-sub">
+                  Deliver concise, voice-aware suggestions. Keep tone consistent with the voice
+                  profile.
+                </div>
+              </Card>
+              <Card size="small" className="panel-card ant-card-ghost dashed">
+                <div className="card-title">Voice Profile</div>
+                <div className="card-sub">Guardian prompt + cliche filter</div>
+              </Card>
             </Sider>
           )}
 
@@ -151,7 +161,7 @@ function App() {
           placement="right"
           open={paletteOpen}
           onClose={() => setPaletteOpen(false)}
-          width="80%"
+          width={isMobile ? '80%' : 420}
         >
           <ColorPanel current={swatchColor} onSelectColor={handleSelectColor} />
         </Drawer>
