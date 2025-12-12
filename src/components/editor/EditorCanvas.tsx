@@ -378,8 +378,10 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
             <RibbonButton label="Align center" icon={<AlignCenterOutlined />} onClick={ribbon.alignCenter} size={btnSize} />
             <RibbonButton label="Align right" icon={<AlignRightOutlined />} onClick={ribbon.alignRight} size={btnSize} />
             <RibbonButton label="Justify" icon={<ColumnWidthOutlined />} onClick={ribbon.alignJustify} size={btnSize} />
-            <RibbonButton label="Justify Center" icon={<SortAscendingOutlined />} onClick={ribbon.alignJustify} size={btnSize} />
-            <RibbonButton label="Justify Full" icon={<SortDescendingOutlined />} onClick={ribbon.alignJustify} size={btnSize} />
+            <RibbonButton label="Justify Last L" icon={<SortAscendingOutlined />} onClick={ribbon.alignJustify} size={btnSize} />
+            <RibbonButton label="Justify Last C" icon={<SortDescendingOutlined />} onClick={ribbon.alignJustify} size={btnSize} />
+            <RibbonButton label="Justify Last R" icon={<ColumnWidthOutlined />} onClick={ribbon.alignJustify} size={btnSize} />
+            <RibbonButton label="Justify All" icon={<AlignCenterOutlined />} onClick={ribbon.alignJustify} size={btnSize} />
           </Space>
           <Space className="ribbon-group flat controls" size={8} wrap>
             <label className="control">
