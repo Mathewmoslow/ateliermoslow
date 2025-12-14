@@ -233,7 +233,7 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
       key: 'type',
       label: 'Type',
       children: (
-        <Space className="ribbon-row" size={8} wrap>
+        <div className="ribbon-row">
           <Space className="ribbon-group flat" size={8} wrap>
             <label className="control">
               <span>Font</span>
@@ -365,14 +365,14 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
               />
             </label>
           </Space>
-        </Space>
+        </div>
       ),
     },
     {
       key: 'paragraph',
       label: 'Paragraph',
       children: (
-        <Space className="ribbon-row" size={8} wrap>
+        <div className="ribbon-row">
           <Space className="ribbon-group flat" size={6} wrap>
             <RibbonButton label="Align left" icon={<AlignLeftOutlined />} onClick={ribbon.alignLeft} size={btnSize} />
             <RibbonButton label="Align center" icon={<AlignCenterOutlined />} onClick={ribbon.alignCenter} size={btnSize} />
@@ -427,14 +427,14 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
               <Switch size="small" checked={hyphenate} onChange={setHyphenate} />
             </label>
           </Space>
-        </Space>
+        </div>
       ),
     },
     {
       key: 'lists',
       label: 'Lists',
       children: (
-        <Space className="ribbon-row" size={8} wrap>
+        <div className="ribbon-row">
           <Space className="ribbon-group flat" size={6} wrap>
             <RibbonButton label="Bullets" icon={<UnorderedListOutlined />} onClick={ribbon.bullet} size={btnSize} />
             <RibbonButton label="Numbered" icon={<OrderedListOutlined />} onClick={ribbon.ordered} size={btnSize} />
@@ -445,7 +445,7 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
             <RibbonButton label="Superscript" icon={<FontSizeOutlined />} onClick={() => editor?.chain().focus().setMark('textStyle', { verticalAlign: 'super' }).run()} size={btnSize} />
             <RibbonButton label="Subscript" icon={<FontSizeOutlined rotate={180} />} onClick={() => editor?.chain().focus().setMark('textStyle', { verticalAlign: 'sub' }).run()} size={btnSize} />
           </Space>
-        </Space>
+        </div>
       ),
     },
   ]

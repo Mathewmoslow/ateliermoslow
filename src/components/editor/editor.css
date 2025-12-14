@@ -5,28 +5,18 @@
 }
 
 .ribbon {
-  display: flex;
-  padding: 0 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
+  column-gap: 6px;
+  row-gap: 4px;
+  padding: 6px 8px;
   background: var(--panel2);
   border-bottom: 1px solid var(--line);
-}
-
-.ribbon-group {
-  display: flex;
-  gap: 8px;
-  padding: 2px 4px;
   align-items: center;
 }
 
-.ribbon-group.ghost {
-  border-style: dashed;
-  opacity: 0.8;
-}
-
-.ribbon-group.flat {
-  border: none;
-  background: transparent;
-  padding: 0;
+.ribbon-row {
+  display: contents;
 }
 
 .ribbon-group.controls {
