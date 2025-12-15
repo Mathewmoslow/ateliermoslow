@@ -6,6 +6,7 @@ import { voicePresets } from '../../companion/voices'
 import { auditText } from '../../companion/audit'
 import { masterRulesSummary, punctuationRules, cadenceRules, styleNotes } from '../../companion/rules'
 import { callCompanion } from '../../api/companion'
+import type { EditorHandle } from '../editor/EditorCanvas'
 import './companion.css'
 
 const { Text } = Typography
@@ -57,7 +58,7 @@ function VoiceSelect() {
   )
 }
 
-function ActionMode() {
+function ActionMode({ editorRef }: { editorRef?: React.RefObject<EditorHandle> }) {
   const { suggestions, addSuggestion, clearSuggestions, selectionPreview, activeVoice } = useCompanionStore()
   const [loadingAction, setLoading] = useState(false)
   const [actionText, setActionText] = useState('')
@@ -121,7 +122,19 @@ function ActionMode() {
               </ul>
             )}
             <Space>
-              <Button size="small" type="primary">Apply</Button>
+              <Button
+                size="small"
+                type="primary"
+                onClick={() => {
+                  if (editorRef?.current) {
+                    editorRef.current.applyText(s.text)
+                  } else {
+                    message.warning('Editor not ready')
+                  }
+                }}
+              >
+                Apply
+              </Button>
               <Button size="small">Copy</Button>
             </Space>
           </Card>
@@ -131,7 +144,7 @@ function ActionMode() {
   )
 }
 
-function ChatMode() {
+function ChatMode({ editorRef }: { editorRef?: React.RefObject<EditorHandle> }) {
   const { chat, addChatTurn, selectionPreview, activeVoice } = useCompanionStore()
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -192,6 +205,19 @@ function ChatMode() {
           <Button type="primary" icon={<SendOutlined />} onClick={send} loading={loading} size="small">
             Send
           </Button>
+          <Button
+            size="small"
+            onClick={() => {
+              const last = [...chat].reverse().find((t) => t.role === 'assistant')
+              if (last && editorRef?.current) {
+                editorRef.current.applyText(last.text)
+              } else {
+                message.warning('No assistant reply to apply')
+              }
+            }}
+          >
+            Apply last reply
+          </Button>
           <Button icon={<ReloadOutlined />} size="small" onClick={() => setInput('More concise, keep order, warmer tone')}>
             Tweak prompt
           </Button>
@@ -251,7 +277,7 @@ function AutonomousMode() {
   )
 }
 
-export function CompanionPanel() {
+export function CompanionPanel({ editorRef }: { editorRef?: React.RefObject<EditorHandle> }) {
   const { activeVoice, setSelectionPreview, selectionPreview, setMode } = useCompanionStore()
   const [activeTab, setActiveTab] = useState('actions')
 
@@ -293,8 +319,8 @@ export function CompanionPanel() {
         }}
         size="small"
         items={[
-          { key: 'actions', label: 'Actions', children: <ActionMode /> },
-          { key: 'chat', label: 'Iterative Chat', children: <ChatMode /> },
+          { key: 'actions', label: 'Actions', children: <ActionMode editorRef={editorRef} /> },
+          { key: 'chat', label: 'Iterative Chat', children: <ChatMode editorRef={editorRef} /> },
           { key: 'autonomous', label: 'Autonomous Draft', children: <AutonomousMode /> },
         ]}
       />

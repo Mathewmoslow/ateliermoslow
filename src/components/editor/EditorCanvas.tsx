@@ -41,6 +41,7 @@ interface EditorCanvasProps {
 
 export interface EditorHandle {
   applyColor: (color: string) => void
+  applyText: (text: string) => void
 }
 
 const RibbonButton = ({
@@ -198,13 +199,16 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
       editor?.chain().focus().setMark('textStyle', { marginRight: `${value}px` }).run()
     }
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        applyColor: (color: string) => applyColor(color),
-      }),
-      [editor],
-    )
+  useImperativeHandle(
+    ref,
+    () => ({
+      applyColor: (color: string) => applyColor(color),
+      applyText: (text: string) => {
+        editor?.chain().focus().insertContent(text).run()
+      },
+    }),
+    [editor],
+  )
 
     const applyLineHeight = (value: number) => setLineHeight(value)
     const applyParaSpacing = (value: number) => setParaSpacing(value)

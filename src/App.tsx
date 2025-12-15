@@ -126,7 +126,7 @@ function App() {
 
           {!isMobile && (
             <Sider width={320} theme="dark" className="workspace-side">
-              <CompanionPanel />
+              <CompanionPanel editorRef={editorRef} />
             </Sider>
           )}
 
