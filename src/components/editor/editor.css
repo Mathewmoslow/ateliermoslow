@@ -68,6 +68,11 @@
   align-items: center;
 }
 
+.metrics-grid.popover {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(2, minmax(110px, 1fr));
+}
+
 .metric-field {
   display: flex;
   align-items: center;
