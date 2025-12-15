@@ -10,6 +10,7 @@ import Color from '@tiptap/extension-color'
 import TextStyle from '@tiptap/extension-text-style'
 import Typography from '@tiptap/extension-typography'
 import CharacterCount from '@tiptap/extension-character-count'
+import { useCompanionStore } from '../../store/companion'
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -105,13 +106,14 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
     const [baselineShift, setBaselineShift] = useState(0)
     const [textCase, setTextCase] = useState<'none' | 'uppercase' | 'lowercase' | 'small-caps'>('none')
     const [kerning, setKerning] = useState<'normal' | 'none'>('normal')
-    const [indentLeft, setIndentLeft] = useState(0)
-    const [indentRight, setIndentRight] = useState(0)
-    const editor = useEditor({
-      extensions: [
-        Color.configure({ types: ['textStyle'] }),
-        TextStyle,
-        StarterKit.configure({
+  const [indentLeft, setIndentLeft] = useState(0)
+  const [indentRight, setIndentRight] = useState(0)
+  const setSelectionPreview = useCompanionStore((s) => s.setSelectionPreview)
+  const editor = useEditor({
+    extensions: [
+      Color.configure({ types: ['textStyle'] }),
+      TextStyle,
+      StarterKit.configure({
           heading: { levels: [1, 2, 3, 4] },
           bulletList: { keepMarks: true },
           orderedList: { keepMarks: true },
@@ -128,7 +130,14 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
         '<h1>Welcome to Atelier Moslow</h1><p>Compose with clarity. The companion and project rails sit to your sides, leaving the page pure.</p>',
     })
 
-    const ribbon = useRibbon(editor)
+  const ribbon = useRibbon(editor)
+  if (editor) {
+    editor.on('selectionUpdate', ({ editor: ed }) => {
+      const { from, to } = ed.state.selection
+      const text = ed.state.doc.textBetween(from, to, ' ') || ed.state.doc.textBetween(0, ed.state.doc.content.size, ' ')
+      setSelectionPreview(text.slice(0, 500))
+    })
+  }
 
     const applyColor = (color: string) => {
       onSwatchChange?.(color)

@@ -4,6 +4,7 @@ import { BgColorsOutlined } from '@ant-design/icons'
 import { useAuthStore } from './store/auth'
 import { EditorCanvas, type EditorHandle } from './components/editor/EditorCanvas'
 import { ColorPanel } from './components/editor/ColorPanel'
+import { CompanionPanel } from './components/companion/CompanionPanel'
 import './styles/globals.css'
 
 const { Header, Content, Sider } = Layout
@@ -124,19 +125,8 @@ function App() {
           </Content>
 
           {!isMobile && (
-            <Sider width={280} theme="dark" className="workspace-side">
-              <div className="panel-header">Companion</div>
-              <Card size="small" className="panel-card">
-                <div className="card-title">AI Brief</div>
-                <div className="card-sub">
-                  Deliver concise, voice-aware suggestions. Keep tone consistent with the voice
-                  profile.
-                </div>
-              </Card>
-              <Card size="small" className="panel-card ant-card-ghost dashed">
-                <div className="card-title">Voice Profile</div>
-                <div className="card-sub">Guardian prompt + cliche filter</div>
-              </Card>
+            <Sider width={320} theme="dark" className="workspace-side">
+              <CompanionPanel />
             </Sider>
           )}
 
