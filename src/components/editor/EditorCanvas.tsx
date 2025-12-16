@@ -28,7 +28,7 @@ import {
   BgColorsOutlined,
   FontSizeOutlined,
 } from '@ant-design/icons'
-import { Button, Space, Tooltip, InputNumber, Switch, Select } from 'antd'
+import { Button, Space, Tooltip, InputNumber, Switch, Select, Popover } from 'antd'
 import './editor.css'
 
 type AlignOption = 'left' | 'center' | 'right' | 'justify'
@@ -42,6 +42,7 @@ interface EditorCanvasProps {
 export interface EditorHandle {
   applyColor: (color: string) => void
   applyText: (text: string) => void
+  getDocumentText: () => string
 }
 
 const RibbonButton = ({
@@ -102,15 +103,11 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
     const [hyphenate, setHyphenate] = useState(true)
     const [fontFamily, setFontFamily] = useState('Inter Tight')
     const [fontSize, setFontSize] = useState(17)
-    const [fontWeight, setFontWeight] = useState(400)
-    const [tracking, setTracking] = useState(0)
-    const [baselineShift, setBaselineShift] = useState(0)
     const [textCase, setTextCase] = useState<'none' | 'uppercase' | 'lowercase' | 'small-caps'>('none')
-    const [kerning, setKerning] = useState<'normal' | 'none'>('normal')
-  const [indentLeft, setIndentLeft] = useState(0)
-  const [indentRight, setIndentRight] = useState(0)
-  const setSelectionPreview = useCompanionStore((s) => s.setSelectionPreview)
-  const editor = useEditor({
+    const [indentLeft, setIndentLeft] = useState(0)
+    const [indentRight, setIndentRight] = useState(0)
+    const setSelectionPreview = useCompanionStore((s) => s.setSelectionPreview)
+    const editor = useEditor({
     extensions: [
       Color.configure({ types: ['textStyle'] }),
       TextStyle,
@@ -150,49 +147,29 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
       editor?.chain().focus().setMark('textStyle', { fontFamily: family }).run()
     }
 
-    const applyFontSize = (size: number) => {
-      setFontSize(size)
-      editor?.chain().focus().setMark('textStyle', { fontSize: `${size}px` }).run()
-    }
+  const applyFontSize = (size: number) => {
+    setFontSize(size)
+    editor?.chain().focus().setMark('textStyle', { fontSize: `${size}px` }).run()
+  }
 
-    const applyFontWeight = (weight: number) => {
-      setFontWeight(weight)
-      editor?.chain().focus().setMark('textStyle', { fontWeight: `${weight}` }).run()
-    }
-
-    const applyTracking = (value: number) => {
-      setTracking(value)
-      editor?.chain().focus().setMark('textStyle', { letterSpacing: `${value}px` }).run()
-    }
-
-    const applyBaselineShift = (value: number) => {
-      setBaselineShift(value)
-      editor?.chain().focus().setMark('textStyle', { verticalAlign: `${value}px` }).run()
-    }
-
-    const applyTextCase = (value: 'none' | 'uppercase' | 'lowercase' | 'small-caps') => {
-      setTextCase(value)
-      const attrs: Record<string, string> = {}
-      if (value === 'uppercase' || value === 'lowercase') {
-        attrs.textTransform = value
+  const applyTextCase = (value: 'none' | 'uppercase' | 'lowercase' | 'small-caps') => {
+    setTextCase(value)
+    const attrs: Record<string, string> = {}
+    if (value === 'uppercase' || value === 'lowercase') {
+      attrs.textTransform = value
       } else if (value === 'small-caps') {
         attrs.fontVariant = 'small-caps'
       } else {
         attrs.textTransform = 'none'
-        attrs.fontVariant = 'normal'
-      }
-      editor?.chain().focus().setMark('textStyle', attrs).run()
+      attrs.fontVariant = 'normal'
     }
+    editor?.chain().focus().setMark('textStyle', attrs).run()
+  }
 
-    const applyKerning = (value: 'normal' | 'none') => {
-      setKerning(value)
-      editor?.chain().focus().setMark('textStyle', { fontKerning: value }).run()
-    }
-
-    const applyIndentLeft = (value: number) => {
-      setIndentLeft(value)
-      editor?.chain().focus().setMark('textStyle', { marginLeft: `${value}px` }).run()
-    }
+  const applyIndentLeft = (value: number) => {
+    setIndentLeft(value)
+    editor?.chain().focus().setMark('textStyle', { marginLeft: `${value}px` }).run()
+  }
 
     const applyIndentRight = (value: number) => {
       setIndentRight(value)
@@ -205,6 +182,11 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
       applyColor: (color: string) => applyColor(color),
       applyText: (text: string) => {
         editor?.chain().focus().insertContent(text).run()
+      },
+      getDocumentText: () => {
+        const doc = editor?.state.doc
+        if (!doc) return ''
+        return doc.textBetween(0, doc.content.size, ' ')
       },
     }),
     [editor],
@@ -221,19 +203,6 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
       return { words, chars }
     }, [editor, editor?.state?.doc])
 
-    const metrics = [
-      { key: 'weight', label: 'Weight', min: 200, max: 800, step: 100, value: fontWeight, onChange: (v: number) => applyFontWeight(v) },
-      { key: 'size', label: 'Size', min: 8, max: 96, step: 1, value: fontSize, onChange: (v: number) => applyFontSize(v) },
-      { key: 'track', label: 'Track', min: -5, max: 20, step: 0.5, value: tracking, onChange: (v: number) => applyTracking(v) },
-      { key: 'baseline', label: 'Baseline', min: -10, max: 20, step: 1, value: baselineShift, onChange: (v: number) => applyBaselineShift(v) },
-      { key: 'line', label: 'Line', min: 1, max: 3, step: 0.1, value: lineHeight, onChange: (v: number) => applyLineHeight(v) },
-      { key: 'before', label: 'Before', min: 0, max: 48, step: 2, value: paraBefore, onChange: (v: number) => setParaBefore(v) },
-      { key: 'after', label: 'After', min: 0, max: 48, step: 2, value: paraAfter, onChange: (v: number) => setParaAfter(v) },
-      { key: 'spacing', label: 'Spacing', min: 0, max: 48, step: 2, value: paraSpacing, onChange: (v: number) => applyParaSpacing(v) },
-      { key: 'indentL', label: 'Indent L', min: 0, max: 60, step: 1, value: indentLeft, onChange: (v: number) => applyIndentLeft(v) },
-      { key: 'indentR', label: 'Indent R', min: 0, max: 60, step: 1, value: indentRight, onChange: (v: number) => applyIndentRight(v) },
-    ]
-
     const parseNumber = (value: number | string | null | undefined, fallback: number) => {
       if (typeof value === 'number' && Number.isFinite(value)) return value
       return fallback
@@ -241,7 +210,7 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
 
     return (
       <div className="editor-shell">
-        <div className="toolbar">
+      <div className="toolbar">
           <div className="toolbar-group">
             <span className="toolbar-label">Font</span>
             <Select
@@ -262,18 +231,12 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
 
           <div className="toolbar-group compact">
             <span className="toolbar-label">Case</span>
-            <Select
-              size="small"
-              value={textCase}
-              style={{ width: 110 }}
-              onChange={(v) => applyTextCase(v as any)}
-              options={[
-                { value: 'none', label: 'Normal' },
-                { value: 'uppercase', label: 'Uppercase' },
-                { value: 'lowercase', label: 'Lowercase' },
-                { value: 'small-caps', label: 'Small Caps' },
-              ]}
-            />
+            <Space size={4}>
+              <Button size="small" type={textCase === 'none' ? 'primary' : 'default'} onClick={() => applyTextCase('none')}>Normal</Button>
+              <Button size="small" type={textCase === 'uppercase' ? 'primary' : 'default'} onClick={() => applyTextCase('uppercase')}>Upper</Button>
+              <Button size="small" type={textCase === 'lowercase' ? 'primary' : 'default'} onClick={() => applyTextCase('lowercase')}>Lower</Button>
+              <Button size="small" type={textCase === 'small-caps' ? 'primary' : 'default'} onClick={() => applyTextCase('small-caps')}>Small Caps</Button>
+            </Space>
           </div>
 
           <div className="toolbar-group compact">
@@ -286,20 +249,6 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
               value={fontSize}
               onChange={(v) => applyFontSize(parseNumber(v, fontSize))}
               style={{ width: 70 }}
-            />
-          </div>
-
-          <div className="toolbar-group compact">
-            <span className="toolbar-label">Kerning</span>
-            <Select
-              size="small"
-              value={kerning}
-              style={{ width: 100 }}
-              onChange={(v) => applyKerning(v as any)}
-              options={[
-                { value: 'normal', label: 'Metrics' },
-                { value: 'none', label: 'None' },
-              ]}
             />
           </div>
 
@@ -332,24 +281,55 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
 
           <div className="toolbar-sep" />
 
-          <div className="metrics-grid">
-            {metrics.map((metric) => (
-              <label className="metric-field" key={metric.key}>
-                <span>{metric.label}</span>
-                <InputNumber
-                  size="small"
-                  min={metric.min}
-                  max={metric.max}
-                  step={metric.step}
-                  value={metric.value}
-                  onChange={(v) => metric.onChange(parseNumber(v, metric.value))}
-                />
-              </label>
+          <Popover
+            placement="bottomLeft"
+            trigger="click"
+            content={
+              <Space direction="vertical" size={8}>
+                <label className="metric-field">
+                  <span>Line</span>
+                  <InputNumber size="small" min={1} max={3} step={0.1} value={lineHeight} onChange={(v) => applyLineHeight(parseNumber(v, lineHeight))} />
+                </label>
+                <label className="metric-field">
+                  <span>Before</span>
+                  <InputNumber size="small" min={0} max={48} step={2} value={paraBefore} onChange={(v) => setParaBefore(parseNumber(v, paraBefore))} />
+                </label>
+                <label className="metric-field">
+                  <span>After</span>
+                  <InputNumber size="small" min={0} max={48} step={2} value={paraAfter} onChange={(v) => setParaAfter(parseNumber(v, paraAfter))} />
+                </label>
+                <label className="metric-field">
+                  <span>Spacing</span>
+                  <InputNumber size="small" min={0} max={48} step={2} value={paraSpacing} onChange={(v) => applyParaSpacing(parseNumber(v, paraSpacing))} />
+                </label>
+                <label className="metric-field">
+                  <span>Indent L</span>
+                  <InputNumber size="small" min={0} max={60} step={1} value={indentLeft} onChange={(v) => applyIndentLeft(parseNumber(v, indentLeft))} />
+                </label>
+                <label className="metric-field">
+                  <span>Indent R</span>
+                  <InputNumber size="small" min={0} max={60} step={1} value={indentRight} onChange={(v) => applyIndentRight(parseNumber(v, indentRight))} />
+                </label>
+                <label className="metric-field switch">
+                  <span>Hyphen</span>
+                  <Switch size="small" checked={hyphenate} onChange={setHyphenate} />
+                </label>
+              </Space>
+            }
+          >
+            <Button size="small">Spacing & Indent</Button>
+          </Popover>
+        </div>
+
+        <div className="ruler-bar">
+          <div className="ruler-track">
+            {Array.from({ length: 13 }).map((_, i) => (
+              <span key={i} className="tick" style={{ left: `${i * 8}%` }}>
+                <span className="label">{i * 10}</span>
+              </span>
             ))}
-            <label className="metric-field switch">
-              <span>Hyphen</span>
-              <Switch size="small" checked={hyphenate} onChange={setHyphenate} />
-            </label>
+            <span className="indent-marker left" style={{ left: `${indentLeft / 2 + 8}px` }} title={`Indent L: ${indentLeft}px`} />
+            <span className="indent-marker right" style={{ right: `${indentRight / 2 + 8}px` }} title={`Indent R: ${indentRight}px`} />
           </div>
         </div>
 

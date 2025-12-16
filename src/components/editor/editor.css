@@ -13,6 +13,9 @@
   background: var(--panel2);
   border-bottom: 1px solid var(--line);
   min-height: 46px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 .toolbar-group {
@@ -43,6 +46,8 @@
 .toolbar-buttons {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .ribbon-btn {
@@ -87,6 +92,52 @@
 
 .metric-field.switch {
   gap: 8px;
+}
+
+.ruler-bar {
+  width: 100%;
+  padding: 4px 12px;
+  background: var(--panel2);
+  border-bottom: 1px solid var(--line);
+}
+
+.ruler-track {
+  position: relative;
+  height: 20px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tick {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tick .label {
+  position: absolute;
+  top: 10px;
+  font-size: 9px;
+  color: var(--text-muted);
+  transform: translateX(-50%);
+}
+
+.indent-marker {
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  background: var(--accent);
+  border-radius: 2px;
+  transform: translate(-50%, 4px);
+}
+
+.indent-marker.right {
+  transform: translate(50%, 4px);
 }
 
 .color-panel-wrap {
