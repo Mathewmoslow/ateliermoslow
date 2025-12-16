@@ -288,6 +288,7 @@ export function CompanionPanel({ editorRef }: { editorRef?: React.RefObject<Edit
     addWritingStyle,
     loadWritingStyles,
   } = companionState
+  const styleList = Array.isArray(writingStyles) ? writingStyles : []
   const [activeTab, setActiveTab] = useState('actions')
   const [auditResult, setAuditResult] = useState<{ flags: string[]; length: number } | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -357,11 +358,11 @@ export function CompanionPanel({ editorRef }: { editorRef?: React.RefObject<Edit
           >
             <Button size="small" loading={uploading}>Upload writing style</Button>
           </Upload>
-          {writingStyles.length > 0 && (
+          {styleList.length > 0 && (
             <div className="style-list">
               <Text type="secondary" style={{ fontSize: 12 }}>Saved styles</Text>
               <ul>
-                {writingStyles.map((s: any) => (
+                {styleList.map((s: any) => (
                   <li key={s.id}>
                     <Text>{s.name}</Text>
                   </li>
