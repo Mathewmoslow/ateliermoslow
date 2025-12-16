@@ -1,5 +1,14 @@
 export const banList = ['fracture', 'quiet spaces', 'quiet space', 'quiet moment'] as const
 
+// Common clichés/phrases to flag when auditing the full document
+export const clicheChecks = [
+  'swept under the rug',
+  'swept under the carpet',
+  'hold space',
+  'needless to say',
+  'at the end of the day',
+] as const
+
 export const punctuationRules = [
   'No em dash or en dash unless explicitly emphasized; prefer sentences or commas.',
   'Avoid ellipses for tone.',

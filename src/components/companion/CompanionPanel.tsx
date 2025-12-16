@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Tabs, Card, Space, Button, Select, Typography, Tag, Input, Alert, Popover, Upload, message } from 'antd'
 import { SendOutlined, ReloadOutlined, AuditOutlined, PlayCircleOutlined, PauseOutlined, StopOutlined } from '@ant-design/icons'
 import { useCompanionStore } from '../../store/companion'
@@ -278,10 +278,39 @@ function AutonomousMode() {
 }
 
 export function CompanionPanel({ editorRef }: { editorRef?: React.RefObject<EditorHandle> }) {
-  const { activeVoice, setSelectionPreview, selectionPreview, setMode } = useCompanionStore()
+  const companionState = useCompanionStore() as any
+  const {
+    activeVoice,
+    setSelectionPreview,
+    selectionPreview,
+    setMode,
+    writingStyles,
+    addWritingStyle,
+    loadWritingStyles,
+  } = companionState
   const [activeTab, setActiveTab] = useState('actions')
+  const [auditResult, setAuditResult] = useState<{ flags: string[]; length: number } | null>(null)
+  const [uploading, setUploading] = useState(false)
 
   const selectionStub = 'Selected paragraph will appear here from the editor.'
+  useEffect(() => {
+    loadWritingStyles()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  const runFullAudit = () => {
+    const text = editorRef?.current?.getDocumentText?.() || ''
+    if (!text) {
+      message.warning('No document text available for audit.')
+      return
+    }
+    const audit = auditText(text, { full: true })
+    setAuditResult({ flags: audit.flags, length: text.length })
+    if (audit.flags.length === 0) {
+      message.success('Audit passed: no clichés or banned terms detected.')
+    } else {
+      message.warning('Audit found items. See details below.')
+    }
+  }
 
   return (
     <div className="companion-panel">
@@ -301,6 +330,46 @@ export function CompanionPanel({ editorRef }: { editorRef?: React.RefObject<Edit
         <div className="voice-summary">
           <Text type="secondary">{activeVoice.summary}</Text>
         </div>
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Upload
+            beforeUpload={(file) => {
+              setUploading(true)
+              const reader = new FileReader()
+              reader.onload = () => {
+                const text = reader.result?.toString() ?? ''
+                addWritingStyle(file.name, text)
+                  .then(() => {
+                    message.success(`Style "${file.name}" saved.`)
+                  })
+                  .catch((e: any) => {
+                    message.error(e?.message ?? 'Failed to save style')
+                  })
+                  .finally(() => setUploading(false))
+              }
+              reader.onerror = () => {
+                message.error('Failed to read style file.')
+                setUploading(false)
+              }
+              reader.readAsText(file)
+              return false
+            }}
+            showUploadList={false}
+          >
+            <Button size="small" loading={uploading}>Upload writing style</Button>
+          </Upload>
+          {writingStyles.length > 0 && (
+            <div className="style-list">
+              <Text type="secondary" style={{ fontSize: 12 }}>Saved styles</Text>
+              <ul>
+                {writingStyles.map((s: any) => (
+                  <li key={s.id}>
+                    <Text>{s.name}</Text>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </Space>
       </div>
 
       <div className="selection-preview">
@@ -309,6 +378,32 @@ export function CompanionPanel({ editorRef }: { editorRef?: React.RefObject<Edit
         <Button size="small" type="link" onClick={() => setSelectionPreview(selectionStub)}>
           Sync selection
         </Button>
+        <Button size="small" onClick={runFullAudit}>
+          Audit full document (rules + clichés)
+        </Button>
+        {auditResult && (
+          <Alert
+            style={{ marginTop: 6 }}
+            type={auditResult.flags.length ? 'warning' : 'success'}
+            showIcon
+            message={
+              auditResult.flags.length
+                ? `Audit found ${auditResult.flags.length} issues`
+                : 'Audit passed'
+            }
+            description={
+              auditResult.flags.length ? (
+                <ul className="flags-list">
+                  {auditResult.flags.map((f) => (
+                    <li key={f}>{f}</li>
+                  ))}
+                </ul>
+              ) : (
+                `Document length: ${auditResult.length} chars`
+              )
+            }
+          />
+        )}
       </div>
 
       <Tabs
