@@ -17,6 +17,13 @@ export interface ChatTurn {
   auditFlags?: string[]
 }
 
+export interface WritingStyle {
+  id: string
+  name: string
+  content: string
+  created_at?: string
+}
+
 interface CompanionState {
   mode: CompanionMode
   activeVoice: VoiceProfile
@@ -25,6 +32,7 @@ interface CompanionState {
   suggestions: Suggestion[]
   chat: ChatTurn[]
   selectionPreview: string
+  writingStyles: WritingStyle[]
   setMode: (mode: CompanionMode) => void
   setVoice: (id: string) => void
   setSelectionPreview: (text: string) => void
@@ -34,6 +42,8 @@ interface CompanionState {
   clearSuggestions: () => void
   addChatTurn: (turn: ChatTurn) => void
   clearChat: () => void
+  addWritingStyle: (name: string, content: string) => Promise<void>
+  loadWritingStyles: () => Promise<void>
 }
 
 export const useCompanionStore = create<CompanionState>((set, get) => ({
@@ -44,6 +54,7 @@ export const useCompanionStore = create<CompanionState>((set, get) => ({
   suggestions: [],
   chat: [],
   selectionPreview: '',
+  writingStyles: [],
   setMode: (mode) => set({ mode }),
   setVoice: (id) => {
     const next = voicePresets.find((v) => v.id === id)
@@ -59,4 +70,33 @@ export const useCompanionStore = create<CompanionState>((set, get) => ({
   clearSuggestions: () => set({ suggestions: [] }),
   addChatTurn: (turn) => set({ chat: [...get().chat, turn] }),
   clearChat: () => set({ chat: [] }),
+  addWritingStyle: async (name, content) => {
+    const fallback: WritingStyle = { id: crypto.randomUUID(), name, content }
+    try {
+      const res = await fetch('/api/styles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, content }),
+      })
+      if (!res.ok) throw new Error(`Failed to save style (${res.status})`)
+      const data = await res.json()
+      const entry: WritingStyle = data?.style ?? fallback
+      set({ writingStyles: [entry, ...get().writingStyles] })
+    } catch (e) {
+      console.warn('Failed to save style, falling back to local only', e)
+      set({ writingStyles: [fallback, ...get().writingStyles] })
+    }
+  },
+  loadWritingStyles: async () => {
+    try {
+      const res = await fetch('/api/styles')
+      if (!res.ok) throw new Error(`Failed to load styles (${res.status})`)
+      const data = await res.json()
+      const styles = Array.isArray(data?.styles) ? data.styles : []
+      set({ writingStyles: styles })
+    } catch (e) {
+      console.warn('Failed to load styles', e)
+      set({ writingStyles: [] })
+    }
+  },
 }))
