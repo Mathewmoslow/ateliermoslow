@@ -298,7 +298,7 @@ export function CompanionPanel({ editorRef }: { editorRef?: React.RefObject<Edit
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const runFullAudit = () => {
-    const text = editorRef?.current?.getDocumentText?.() || ''
+    const text = (editorRef?.current as any)?.getDocumentText?.() || ''
     if (!text) {
       message.warning('No document text available for audit.')
       return
