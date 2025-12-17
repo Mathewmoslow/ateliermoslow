@@ -4,12 +4,18 @@ import { SendOutlined, ReloadOutlined, AuditOutlined, PlayCircleOutlined, PauseO
 import { useCompanionStore } from '../../store/companion'
 import { voicePresets } from '../../companion/voices'
 import { auditText } from '../../companion/audit'
-import { masterRulesSummary, punctuationRules, cadenceRules, styleNotes } from '../../companion/rules'
+import { masterRulesSummary, masterStyleCondensed, masterStyleFull, punctuationRules, cadenceRules, styleNotes } from '../../companion/rules'
 import { callCompanion } from '../../api/companion'
 import type { EditorHandle } from '../editor/EditorCanvas'
 import './companion.css'
 
 const { Text } = Typography
+
+let requestCounter = 0
+const shouldIncludeFullStyle = () => {
+  requestCounter += 1
+  return requestCounter % 3 === 0
+}
 
 function VoiceBadge() {
   const activeVoice = useCompanionStore((s) => s.activeVoice)
@@ -69,12 +75,15 @@ function ActionMode({ editorRef }: { editorRef?: React.RefObject<EditorHandle> }
     setError(null)
     setLoading(true)
     try {
+      const includeFull = shouldIncludeFullStyle()
       const res = await callCompanion({
         mode: 'action',
         action: label,
         text: base,
         voiceId: activeVoice.id,
-        rules: [...masterRulesSummary],
+        rules: includeFull
+          ? [...masterRulesSummary, ...masterStyleCondensed, masterStyleFull]
+          : [...masterRulesSummary, ...masterStyleCondensed],
       })
       const audit = auditText(res.text)
       addSuggestion(res.text, audit.flags)
@@ -158,11 +167,14 @@ function ChatMode({ editorRef }: { editorRef?: React.RefObject<EditorHandle> }) 
     const prompt = input
     setInput('')
     try {
+      const includeFull = shouldIncludeFullStyle()
       const res = await callCompanion({
         mode: 'chat',
         text: `${selectionPreview || ''}\n\n${prompt}`.trim(),
         voiceId: activeVoice.id,
-        rules: [...masterRulesSummary],
+        rules: includeFull
+          ? [...masterRulesSummary, ...masterStyleCondensed, masterStyleFull]
+          : [...masterRulesSummary, ...masterStyleCondensed],
       })
       const audit = auditText(res.text)
       addChatTurn({

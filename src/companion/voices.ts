@@ -11,7 +11,7 @@ export const voicePresets: VoiceProfile[] = [
     name: 'Mathew Master',
     summary: 'Primary voice profile drawn from style + rules docs.',
     prompt:
-      'Use Mathew Moslow master voice. Preserve cadence, directness, and ban-listed wording. Avoid cliches. No em/en dashes unless explicitly requested for emphasis. Vary sentence length. Match letter cadence over literary flourish.',
+      'Use Mathew Moslow master voice. Preserve cadence, directness, and ban-listed wording. Avoid cliches. No em/en dashes unless explicitly requested for emphasis. Vary sentence length and paragraph length. Section-by-section processing only. Facts over feelings when discussing grievances. Include a sensory anchor per section. If it sounds good but forgettable, rewrite it.',
   },
   {
     id: 'brene',
