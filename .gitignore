@@ -41,7 +41,6 @@ vite.config.js
 vite.config.d.ts
 
 # Reference directories (keep locally, don't track)
-file-portal/
 
 # TypeScript
 *.tsbuildinfo

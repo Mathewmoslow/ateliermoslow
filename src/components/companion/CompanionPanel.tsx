@@ -328,8 +328,8 @@ export function CompanionPanel({ editorRef }: { editorRef?: React.RefObject<Edit
   return (
     <div className="companion-panel">
       <div className="companion-header">
-        <div>
-          <Text strong>Companion</Text>
+        <div className="companion-title-wrap">
+          <Text strong className="companion-title">Companion</Text>
           <div className="companion-sub">In-context drafting + autonomous beats</div>
         </div>
         <Space size={8}>
