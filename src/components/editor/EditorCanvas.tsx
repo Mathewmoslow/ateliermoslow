@@ -231,44 +231,12 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
 
           <div className="toolbar-group compact">
             <span className="toolbar-label">Case</span>
-            <div className="case-buttons">
-              <Button
-                size="small"
-                type="text"
-                className={`case-btn ${textCase === 'none' ? 'active' : ''}`}
-                onClick={() => applyTextCase('none')}
-                title="Normal case"
-              >
-                Aa
-              </Button>
-              <Button
-                size="small"
-                type="text"
-                className={`case-btn ${textCase === 'uppercase' ? 'active' : ''}`}
-                onClick={() => applyTextCase('uppercase')}
-                title="All caps"
-              >
-                TT
-              </Button>
-              <Button
-                size="small"
-                type="text"
-                className={`case-btn ${textCase === 'lowercase' ? 'active' : ''}`}
-                onClick={() => applyTextCase('lowercase')}
-                title="Lowercase"
-              >
-                tt
-              </Button>
-              <Button
-                size="small"
-                type="text"
-                className={`case-btn ${textCase === 'small-caps' ? 'active' : ''}`}
-                onClick={() => applyTextCase('small-caps')}
-                title="Small caps"
-              >
-                Sc
-              </Button>
-            </div>
+            <Space size={4}>
+              <Button size="small" type={textCase === 'none' ? 'primary' : 'default'} onClick={() => applyTextCase('none')}>Normal</Button>
+              <Button size="small" type={textCase === 'uppercase' ? 'primary' : 'default'} onClick={() => applyTextCase('uppercase')}>Upper</Button>
+              <Button size="small" type={textCase === 'lowercase' ? 'primary' : 'default'} onClick={() => applyTextCase('lowercase')}>Lower</Button>
+              <Button size="small" type={textCase === 'small-caps' ? 'primary' : 'default'} onClick={() => applyTextCase('small-caps')}>Small Caps</Button>
+            </Space>
           </div>
 
           <div className="toolbar-group compact">
@@ -299,40 +267,17 @@ export const EditorCanvas = forwardRef<EditorHandle, EditorCanvasProps>(
 
           <div className="toolbar-sep" />
 
-          <div className="toolbar-group align-group">
-            <Space className="toolbar-buttons" size={4} wrap>
-              <RibbonButton label="Align left" icon={<AlignLeftOutlined />} onClick={ribbon.alignLeft} size={btnSize} />
-              <RibbonButton label="Align center" icon={<AlignCenterOutlined />} onClick={ribbon.alignCenter} size={btnSize} />
-              <RibbonButton label="Align right" icon={<AlignRightOutlined />} onClick={ribbon.alignRight} size={btnSize} />
-              <RibbonButton label="Justify" icon={<ColumnWidthOutlined />} onClick={ribbon.alignJustify} size={btnSize} />
-              <RibbonButton label="Bullets" icon={<UnorderedListOutlined />} onClick={ribbon.bullet} size={btnSize} />
-              <RibbonButton label="Numbered" icon={<OrderedListOutlined />} onClick={ribbon.ordered} size={btnSize} />
-              <RibbonButton label="Indent" icon={<FieldBinaryOutlined />} onClick={ribbon.indent} size={btnSize} />
-              <RibbonButton label="Outdent" icon={<FieldBinaryOutlined rotate={180} />} onClick={ribbon.outdent} size={btnSize} />
-              <RibbonButton label="Clear" icon={<ClearOutlined />} onClick={ribbon.clearFormatting} size={btnSize} />
-            </Space>
-          </div>
-          <div className="toolbar-group align-group-pop">
-            <Popover
-              trigger="click"
-              placement="bottomLeft"
-              content={
-                <Space className="toolbar-buttons" size={4} wrap>
-                  <RibbonButton label="Align left" icon={<AlignLeftOutlined />} onClick={ribbon.alignLeft} size={btnSize} />
-                  <RibbonButton label="Align center" icon={<AlignCenterOutlined />} onClick={ribbon.alignCenter} size={btnSize} />
-                  <RibbonButton label="Align right" icon={<AlignRightOutlined />} onClick={ribbon.alignRight} size={btnSize} />
-                  <RibbonButton label="Justify" icon={<ColumnWidthOutlined />} onClick={ribbon.alignJustify} size={btnSize} />
-                  <RibbonButton label="Bullets" icon={<UnorderedListOutlined />} onClick={ribbon.bullet} size={btnSize} />
-                  <RibbonButton label="Numbered" icon={<OrderedListOutlined />} onClick={ribbon.ordered} size={btnSize} />
-                  <RibbonButton label="Indent" icon={<FieldBinaryOutlined />} onClick={ribbon.indent} size={btnSize} />
-                  <RibbonButton label="Outdent" icon={<FieldBinaryOutlined rotate={180} />} onClick={ribbon.outdent} size={btnSize} />
-                  <RibbonButton label="Clear" icon={<ClearOutlined />} onClick={ribbon.clearFormatting} size={btnSize} />
-                </Space>
-              }
-            >
-              <Button size="small">More</Button>
-            </Popover>
-          </div>
+          <Space className="toolbar-buttons" size={4} wrap>
+            <RibbonButton label="Align left" icon={<AlignLeftOutlined />} onClick={ribbon.alignLeft} size={btnSize} />
+            <RibbonButton label="Align center" icon={<AlignCenterOutlined />} onClick={ribbon.alignCenter} size={btnSize} />
+            <RibbonButton label="Align right" icon={<AlignRightOutlined />} onClick={ribbon.alignRight} size={btnSize} />
+            <RibbonButton label="Justify" icon={<ColumnWidthOutlined />} onClick={ribbon.alignJustify} size={btnSize} />
+            <RibbonButton label="Bullets" icon={<UnorderedListOutlined />} onClick={ribbon.bullet} size={btnSize} />
+            <RibbonButton label="Numbered" icon={<OrderedListOutlined />} onClick={ribbon.ordered} size={btnSize} />
+            <RibbonButton label="Indent" icon={<FieldBinaryOutlined />} onClick={ribbon.indent} size={btnSize} />
+            <RibbonButton label="Outdent" icon={<FieldBinaryOutlined rotate={180} />} onClick={ribbon.outdent} size={btnSize} />
+            <RibbonButton label="Clear" icon={<ClearOutlined />} onClick={ribbon.clearFormatting} size={btnSize} />
+          </Space>
 
           <div className="toolbar-sep" />
 
